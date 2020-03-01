@@ -4,16 +4,16 @@ import com.univocity.trader.chart.annotation.*;
 
 public class RulerUpdateProcessor implements UpdateProcessor {
 
-	protected RulerController<?> controller;
+    protected RulerController<?> controller;
 
-	public RulerUpdateProcessor(RulerController<?> controller) {
-		this.controller = controller;
-	}
+    public RulerUpdateProcessor(RulerController<?> controller) {
+        this.controller = controller;
+    }
 
-	@Override
-	public void execute() {
-		if (controller != null) {
-			controller.getRuler().chart.invokeRepaint();;
-		}
-	}
+    @Override
+    public void execute() {
+        if (controller != null) {
+            controller.getRuler().chart.invokeRepaint();;
+        }
+    }
 }

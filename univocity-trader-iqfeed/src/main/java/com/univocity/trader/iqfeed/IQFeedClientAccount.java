@@ -12,62 +12,61 @@ import java.util.*;
 
 class IQFeedClientAccount implements ClientAccount {
 
-	private static final Logger log = LoggerFactory.getLogger(IQFeedApiWebSocketClient.class);
+    private static final Logger log = LoggerFactory.getLogger(IQFeedApiWebSocketClient.class);
 
-	private final IQFeedApiClientFactory factory;
-	private final IQFeedApiWebSocketClient client;
-	private SymbolPriceDetails symbolPriceDetails;
-	private IQFeedExchange exchangeAPI;
-	private double minimumBnbAmountToKeep = 1.0;
+    private final IQFeedApiClientFactory factory;
+    private final IQFeedApiWebSocketClient client;
+    private SymbolPriceDetails symbolPriceDetails;
+    private IQFeedExchange exchangeAPI;
+    private double minimumBnbAmountToKeep = 1.0;
 
-	public IQFeedClientAccount() {
-		this.exchangeAPI = exchangeAPI;
+    public IQFeedClientAccount() {
+        this.exchangeAPI = exchangeAPI;
 
-		final EventLoopGroup eventLoopGroup = new NioEventLoopGroup(2);
-		final AsyncHttpClient asyncHttpClient = HttpUtils.newAsyncHttpClient(eventLoopGroup, 655356);
+        final EventLoopGroup eventLoopGroup = new NioEventLoopGroup(2);
+        final AsyncHttpClient asyncHttpClient = HttpUtils.newAsyncHttpClient(eventLoopGroup, 655356);
 
-		factory = IQFeedApiClientFactory.newInstance(asyncHttpClient);
-		client = factory.newWebSocketClient();
-	}
+        factory = IQFeedApiClientFactory.newInstance(asyncHttpClient);
+        client = factory.newWebSocketClient();
+    }
 
-	// unused methods - ask about adding new interface for data vendor
-	@Override
-	public Order updateOrderStatus(Order order) {
-		return null;
-	}
+    // unused methods - ask about adding new interface for data vendor
+    @Override
+    public Order updateOrderStatus(Order order) {
+        return null;
+    }
 
-	@Override
-	public void cancel(Order order) {
-	}
+    @Override
+    public void cancel(Order order) {}
 
-	@Override
-	public OrderBook getOrderBook(String symbol, int depth) {
-		return null;
-	}
+    @Override
+    public OrderBook getOrderBook(String symbol, int depth) {
+        return null;
+    }
 
-	@Override
-	public Map<String, Balance> updateBalances() {
-		return null;
-	}
+    @Override
+    public Map<String, Balance> updateBalances() {
+        return null;
+    }
 
-	@Override
-	public Order executeOrder(OrderRequest orderDetails) {
-		return null;
-	}
+    @Override
+    public Order executeOrder(OrderRequest orderDetails) {
+        return null;
+    }
 
-	public double getMinimumBnbAmountToKeep() {
-		return minimumBnbAmountToKeep;
-	}
+    public double getMinimumBnbAmountToKeep() {
+        return minimumBnbAmountToKeep;
+    }
 
-	public void setMinimumBnbAmountToKeep(double minimumBnbAmountToKeep) {
-		this.minimumBnbAmountToKeep = minimumBnbAmountToKeep;
-	}
+    public void setMinimumBnbAmountToKeep(double minimumBnbAmountToKeep) {
+        this.minimumBnbAmountToKeep = minimumBnbAmountToKeep;
+    }
 
-	private SymbolPriceDetails getSymbolPriceDetails() {
-		if (symbolPriceDetails == null) {
-			symbolPriceDetails = new SymbolPriceDetails(exchangeAPI);
-		}
-		return symbolPriceDetails;
-	}
+    private SymbolPriceDetails getSymbolPriceDetails() {
+        if (symbolPriceDetails == null) {
+            symbolPriceDetails = new SymbolPriceDetails(exchangeAPI);
+        }
+        return symbolPriceDetails;
+    }
 
 }

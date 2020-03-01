@@ -11,29 +11,29 @@ import java.util.function.*;
  */
 public class MovingAverage extends MultiValueIndicator {
 
-	private double value;
+    private double value;
 
-	public MovingAverage(int length, TimeInterval interval) {
-		this(length, interval, c -> c.close);
-	}
+    public MovingAverage(int length, TimeInterval interval) {
+        this(length, interval, c -> c.close);
+    }
 
-	public MovingAverage(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
-		super(length, interval, valueGetter);
-	}
+    public MovingAverage(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
+        super(length, interval, valueGetter);
+    }
 
-	@Override
-	protected boolean calculateIndicatorValue(Candle candle, double value, boolean updating) {
-		this.value = values.avg();
-		return true;
-	}
+    @Override
+    protected boolean calculateIndicatorValue(Candle candle, double value, boolean updating) {
+        this.value = values.avg();
+        return true;
+    }
 
-	@Override
-	public double getValue() {
-		return value;
-	}
+    @Override
+    public double getValue() {
+        return value;
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }

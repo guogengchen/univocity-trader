@@ -14,43 +14,43 @@ import java.util.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DepositHistory {
 
-	@JsonProperty("depositList")
-	private List<Deposit> depositList;
+    @JsonProperty("depositList")
+    private List<Deposit> depositList;
 
-	private boolean success;
+    private boolean success;
 
-	private String msg;
+    private String msg;
 
-	public String getMsg() {
-		return msg;
-	}
+    public String getMsg() {
+        return msg;
+    }
 
-	public void setMsg(String msg) {
-		this.msg = msg;
-	}
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
 
-	public List<Deposit> getDepositList() {
-		return depositList;
-	}
+    public List<Deposit> getDepositList() {
+        return depositList;
+    }
 
-	public void setDepositList(List<Deposit> depositList) {
-		this.depositList = depositList;
-	}
+    public void setDepositList(List<Deposit> depositList) {
+        this.depositList = depositList;
+    }
 
-	public boolean isSuccess() {
-		return success;
-	}
+    public boolean isSuccess() {
+        return success;
+    }
 
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-				.append("depositList", depositList)
-				.append("success", success)
-				.append("msg", msg)
-				.toString();
-	}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
+            .append("depositList", depositList)
+            .append("success", success)
+            .append("msg", msg)
+            .toString();
+    }
 }

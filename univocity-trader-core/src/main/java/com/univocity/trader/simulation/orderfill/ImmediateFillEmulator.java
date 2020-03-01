@@ -12,11 +12,11 @@ import com.univocity.trader.candles.*;
  */
 public class ImmediateFillEmulator implements OrderFillEmulator {
 
-	@Override
-	public void fillOrder(DefaultOrder order, Candle candle) {
-		if(!order.isFinalized()){
-			order.setStatus(Order.Status.FILLED);
-			order.setExecutedQuantity(order.getQuantity());
-		}
-	}
+    @Override
+    public void fillOrder(DefaultOrder order, Candle candle) {
+        if (!order.isFinalized()) {
+            order.setStatus(Order.Status.FILLED);
+            order.setExecutedQuantity(order.getQuantity());
+        }
+    }
 }

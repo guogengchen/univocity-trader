@@ -6,37 +6,34 @@ import com.univocity.trader.strategy.*;
 
 public class OBV extends SingleValueCalculationIndicator {
 
+    private double previous;
 
-	private double previous;
+    public OBV(TimeInterval interval) {
+        super(interval);
+    }
 
-	public OBV(TimeInterval interval) {
-		super(interval);
-	}
+    @Override
+    protected double calculate(Candle candle, double value, double obv, boolean updating) {
+        if (getAccumulationCount() == 0) {
+            previous = value;
+            return 0.0;
+        }
 
-	@Override
-	protected double calculate(Candle candle, double value, double obv, boolean updating) {
-		if (getAccumulationCount() == 0) {
-			previous = value;
-			return 0.0;
-		}
+        if (value > previous) {
+            obv = obv + candle.volume;
+        } else if (value < previous) {
+            obv = obv - candle.volume;
+        }
 
-		if (value > previous) {
-			obv = obv + candle.volume;
-		} else if (value < previous) {
-			obv = obv - candle.volume;
-		}
+        if (!updating) {
+            previous = value;
+        }
 
-		if (!updating) {
-			previous = value;
-		}
+        return obv;
+    }
 
-		return obv;
-	}
-
-
-
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }

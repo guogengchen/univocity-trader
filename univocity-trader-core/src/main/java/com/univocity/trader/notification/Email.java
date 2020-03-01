@@ -9,51 +9,50 @@ package com.univocity.trader.notification;
 
 public class Email {
 
-	private String from;
-	private String[] to;
-	private String replyTo;
-	private String title;
-	private String body;
+    private String from;
+    private String[] to;
+    private String replyTo;
+    private String title;
+    private String body;
 
-	public String getFrom() {
-		return from;
-	}
+    public String getFrom() {
+        return from;
+    }
 
-	public void setFrom(String from) {
-		this.from = from;
-	}
+    public void setFrom(String from) {
+        this.from = from;
+    }
 
-	public String[] getTo() {
-		return to;
-	}
+    public String[] getTo() {
+        return to;
+    }
 
-	public void setTo(String[] to) {
-		this.to = to;
-	}
+    public void setTo(String[] to) {
+        this.to = to;
+    }
 
-	public String getReplyTo() {
-		return replyTo;
-	}
+    public String getReplyTo() {
+        return replyTo;
+    }
 
-	public void setReplyTo(String replyTo) {
-		this.replyTo = replyTo;
-	}
+    public void setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public String getBody() {
-		return body;
-	}
+    public String getBody() {
+        return body;
+    }
 
-	public void setBody(String body) {
-		this.body = body;
-	}
-
+    public void setBody(String body) {
+        this.body = body;
+    }
 
 }

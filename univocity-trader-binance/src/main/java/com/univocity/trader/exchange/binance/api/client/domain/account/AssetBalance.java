@@ -14,90 +14,89 @@ import java.util.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AssetBalance {
 
-	/**
-	 * Asset symbol.
-	 */
-	private String asset;
+    /**
+     * Asset symbol.
+     */
+    private String asset;
 
-	/**
-	 * Available balance.
-	 */
-	private String free;
+    /**
+     * Available balance.
+     */
+    private String free;
 
-	/**
-	 * Locked by open orders.
-	 */
-	private String locked;
+    /**
+     * Locked by open orders.
+     */
+    private String locked;
 
-	public String getAsset() {
-		return asset;
-	}
+    public String getAsset() {
+        return asset;
+    }
 
-	public void setAsset(String asset) {
-		this.asset = asset;
-	}
+    public void setAsset(String asset) {
+        this.asset = asset;
+    }
 
-	public String getFree() {
-		return free;
-	}
+    public String getFree() {
+        return free;
+    }
 
-	public void setFree(String free) {
-		this.free = free;
-	}
+    public void setFree(String free) {
+        this.free = free;
+    }
 
-	public String getLocked() {
-		return locked;
-	}
+    public String getLocked() {
+        return locked;
+    }
 
-	public void setLocked(String locked) {
-		this.locked = locked;
-	}
+    public void setLocked(String locked) {
+        this.locked = locked;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-				.append("asset", asset)
-				.append("free", free)
-				.append("locked", locked)
-				.toString();
-	}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
+            .append("asset", asset)
+            .append("free", free)
+            .append("locked", locked)
+            .toString();
+    }
 
-	public double getFreeAmount() {
-		return toAmount(free);
-	}
+    public double getFreeAmount() {
+        return toAmount(free);
+    }
 
-	public double getLockedAmount() {
-		return toAmount(locked);
-	}
+    public double getLockedAmount() {
+        return toAmount(locked);
+    }
 
-	private double toAmount(String s) {
-		try {
-			return s == null ? 0.0 : Double.parseDouble(s);
-		} catch (Exception e) {
-			return 0.0;
-		}
-	}
+    private double toAmount(String s) {
+        try {
+            return s == null ? 0.0 : Double.parseDouble(s);
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
 
-	public static double getFreeAmount(AssetBalance asset) {
-		if (asset == null) {
-			return 0.0;
-		}
-		return asset.getFreeAmount();
-	}
+    public static double getFreeAmount(AssetBalance asset) {
+        if (asset == null) {
+            return 0.0;
+        }
+        return asset.getFreeAmount();
+    }
 
+    public static double getLockedAmount(AssetBalance asset) {
+        if (asset == null) {
+            return 0.0;
+        }
+        return asset.getLockedAmount();
+    }
 
-	public static double getLockedAmount(AssetBalance asset) {
-		if (asset == null) {
-			return 0.0;
-		}
-		return asset.getLockedAmount();
-	}
+    public static double getFreeAmount(Map<String, AssetBalance> balances, String asset) {
+        return getFreeAmount(balances.get(asset));
+    }
 
-	public static double getFreeAmount(Map<String, AssetBalance> balances, String asset) {
-		return getFreeAmount(balances.get(asset));
-	}
-
-	public static double getLockedAmount(Map<String, AssetBalance> balances, String asset) {
-		return getLockedAmount(balances.get(asset));
-	}
+    public static double getLockedAmount(Map<String, AssetBalance> balances, String asset) {
+        return getLockedAmount(balances.get(asset));
+    }
 }

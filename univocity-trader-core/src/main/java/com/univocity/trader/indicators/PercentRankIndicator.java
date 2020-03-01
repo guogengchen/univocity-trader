@@ -7,52 +7,52 @@ import com.univocity.trader.utils.*;
 
 public class PercentRankIndicator extends SingleValueIndicator {
 
-	private CircularList values;
-	private RateOfChange roc;
-	private double value;
+    private CircularList values;
+    private RateOfChange roc;
+    private double value;
 
-	public PercentRankIndicator(TimeInterval interval) {
-		this(100, interval);
-	}
+    public PercentRankIndicator(TimeInterval interval) {
+        this(100, interval);
+    }
 
-	public PercentRankIndicator(int length, TimeInterval interval) {
-		super(interval, null);
-		this.values = new CircularList(length);
-		this.roc = new RateOfChange(1, interval);
-	}
+    public PercentRankIndicator(int length, TimeInterval interval) {
+        super(interval, null);
+        this.values = new CircularList(length);
+        this.roc = new RateOfChange(1, interval);
+    }
 
-	@Override
-	public double getValue() {
-		return value;
-	}
+    @Override
+    public double getValue() {
+        return value;
+    }
 
-	@Override
-	protected boolean process(Candle candle, double value, boolean updating) {
-		if (roc.accumulate(candle)) {
-			double change = roc.getValue();
+    @Override
+    protected boolean process(Candle candle, double value, boolean updating) {
+        if (roc.accumulate(candle)) {
+            double change = roc.getValue();
 
-			if (updating) {
-				values.update(change);
-			} else {
-				values.add(change);
-			}
+            if (updating) {
+                values.update(change);
+            } else {
+                values.add(change);
+            }
 
-			int size = values.size();
-			double count = 0.0;
-			for (int i = 0; i < size; i++) {
-				if (values.values[i] < change) {
-					count++;
-				}
-			}
-			this.value = (count / size) * 100.0;
-			return true;
-		}
+            int size = values.size();
+            double count = 0.0;
+            for (int i = 0; i < size; i++) {
+                if (values.values[i] < change) {
+                    count++;
+                }
+            }
+            this.value = (count / size) * 100.0;
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{roc};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {roc};
+    }
 }

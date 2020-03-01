@@ -10,53 +10,53 @@ import org.apache.commons.lang3.builder.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DepositAddress {
 
-	private String address;
+    private String address;
 
-	private boolean success;
+    private boolean success;
 
-	private String addressTag;
+    private String addressTag;
 
-	private String asset;
+    private String asset;
 
-	public String getAddress() {
-		return address;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-	public boolean isSuccess() {
-		return success;
-	}
+    public boolean isSuccess() {
+        return success;
+    }
 
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
 
-	public String getAddressTag() {
-		return addressTag;
-	}
+    public String getAddressTag() {
+        return addressTag;
+    }
 
-	public void setAddressTag(String addressTag) {
-		this.addressTag = addressTag;
-	}
+    public void setAddressTag(String addressTag) {
+        this.addressTag = addressTag;
+    }
 
-	public String getAsset() {
-		return asset;
-	}
+    public String getAsset() {
+        return asset;
+    }
 
-	public void setAsset(String asset) {
-		this.asset = asset;
-	}
+    public void setAsset(String asset) {
+        this.asset = asset;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-				.append("address", address)
-				.append("success", success)
-				.append("addressTag", addressTag)
-				.append("asset", asset)
-				.toString();
-	}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
+            .append("address", address)
+            .append("success", success)
+            .append("addressTag", addressTag)
+            .append("asset", asset)
+            .toString();
+    }
 }

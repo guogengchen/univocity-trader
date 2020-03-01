@@ -9,33 +9,33 @@ import com.univocity.trader.strategy.*;
  */
 public class TrueRange extends SingleValueCalculationIndicator {
 
-	private Candle prev;
+    private Candle prev;
 
-	public TrueRange(TimeInterval interval) {
-		super(interval, null);
-	}
+    public TrueRange(TimeInterval interval) {
+        super(interval, null);
+    }
 
-	@Override
-	protected double extractValue(Candle candle, boolean updating) {
-		double ts = Math.abs(candle.high - candle.low);
-		double ys = prev == null ? 0 : Math.abs(prev.close <= 0.0 ? 0.0 : candle.high - prev.close);
-		double yst = prev == null ? 0 : Math.abs(prev.close <= 0.0 ? 0.0 : prev.close - candle.low);
-		double out = Math.max(Math.max(ts, ys), yst);
+    @Override
+    protected double extractValue(Candle candle, boolean updating) {
+        double ts = Math.abs(candle.high - candle.low);
+        double ys = prev == null ? 0 : Math.abs(prev.close <= 0.0 ? 0.0 : candle.high - prev.close);
+        double yst = prev == null ? 0 : Math.abs(prev.close <= 0.0 ? 0.0 : prev.close - candle.low);
+        double out = Math.max(Math.max(ts, ys), yst);
 
-		if (!updating) {
-			prev = candle;
-		}
+        if (!updating) {
+            prev = candle;
+        }
 
-		return out;
-	}
+        return out;
+    }
 
-	@Override
-	protected double calculate(Candle candle, double value, double previousValue, boolean updating) {
-		return value;
-	}
+    @Override
+    protected double calculate(Candle candle, double value, double previousValue, boolean updating) {
+        return value;
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }

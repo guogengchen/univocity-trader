@@ -6,5 +6,5 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Inherited
 public @interface Position {
-	int value();
+    int value();
 }

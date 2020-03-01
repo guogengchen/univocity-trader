@@ -14,51 +14,52 @@ import java.util.concurrent.*;
  */
 public class Account extends AccountConfiguration<Account> {
 
-	private Map<String, Contract> tradedContracts = new ConcurrentHashMap<>();
-	private Map<String, TradeType> tradeTypes = new ConcurrentHashMap<>();
+    private Map<String, Contract> tradedContracts = new ConcurrentHashMap<>();
+    private Map<String, TradeType> tradeTypes = new ConcurrentHashMap<>();
 
-	public Account(String id) {
-		super(id);
-	}
+    public Account(String id) {
+        super(id);
+    }
 
-	@Override
-	protected void readExchangeAccountProperties(String accountId, PropertyBasedConfiguration properties) {
+    @Override
+    protected void readExchangeAccountProperties(String accountId, PropertyBasedConfiguration properties) {
 
-	}
+    }
 
-	public Contract tradeWith(SecurityType securityType, String symbol) {
-		return tradeWith(securityType, symbol, referenceCurrency());
-	}
+    public Contract tradeWith(SecurityType securityType, String symbol) {
+        return tradeWith(securityType, symbol, referenceCurrency());
+    }
 
-	public Contract tradeWith(SecurityType securityType, String symbol, String currency) {
-		return tradeWith(securityType, symbol, currency, tradeTypes.getOrDefault(symbol + currency, securityType.defaultTradeType()));
-	}
+    public Contract tradeWith(SecurityType securityType, String symbol, String currency) {
+        return tradeWith(securityType, symbol, currency,
+            tradeTypes.getOrDefault(symbol + currency, securityType.defaultTradeType()));
+    }
 
-	public Contract tradeWith(SecurityType securityType, String symbol, String currency, TradeType tradeType) {
-		String pair = symbol + currency;
-		if(tradeTypes.containsKey(pair)){
-			tradeTypes.get(pair);
-		}
+    public Contract tradeWith(SecurityType securityType, String symbol, String currency, TradeType tradeType) {
+        String pair = symbol + currency;
+        if (tradeTypes.containsKey(pair)) {
+            tradeTypes.get(pair);
+        }
 
-		tradeWithPair(new String[]{symbol, currency});
-		Contract contract = tradedContracts.get(pair);
-		if (contract == null) {
-			contract = new Contract();
-			contract.symbol(symbol);
-			contract.secType(securityType.securityCode);
-			contract.currency(currency);
-			contract.exchange(securityType.defaultExchange);
-			tradedContracts.put(pair, contract);
-		}
-		tradeTypes.put(pair, tradeType);
-		return contract;
-	}
+        tradeWithPair(new String[] {symbol, currency});
+        Contract contract = tradedContracts.get(pair);
+        if (contract == null) {
+            contract = new Contract();
+            contract.symbol(symbol);
+            contract.secType(securityType.securityCode);
+            contract.currency(currency);
+            contract.exchange(securityType.defaultExchange);
+            tradedContracts.put(pair, contract);
+        }
+        tradeTypes.put(pair, tradeType);
+        return contract;
+    }
 
-	public Map<String, Contract> tradedContracts() {
-		return Collections.unmodifiableMap(tradedContracts);
-	}
+    public Map<String, Contract> tradedContracts() {
+        return Collections.unmodifiableMap(tradedContracts);
+    }
 
-	public Map<String, TradeType> tradeTypes() {
-		return Collections.unmodifiableMap(tradeTypes);
-	}
+    public Map<String, TradeType> tradeTypes() {
+        return Collections.unmodifiableMap(tradeTypes);
+    }
 }

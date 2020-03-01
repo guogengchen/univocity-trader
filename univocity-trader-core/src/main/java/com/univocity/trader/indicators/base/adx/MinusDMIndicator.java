@@ -8,17 +8,17 @@ import com.univocity.trader.strategy.*;
  */
 public class MinusDMIndicator extends AbstractDMIndicator {
 
-	public MinusDMIndicator(TimeInterval interval) {
-		super(interval);
-	}
+    public MinusDMIndicator(TimeInterval interval) {
+        super(interval);
+    }
 
-	@Override
-	protected double calculate(double upMove, double downMove) {
-		return downMove > upMove && downMove > 0 ? downMove : 0;
-	}
+    @Override
+    protected double calculate(double upMove, double downMove) {
+        return downMove > upMove && downMove > 0 ? downMove : 0;
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }

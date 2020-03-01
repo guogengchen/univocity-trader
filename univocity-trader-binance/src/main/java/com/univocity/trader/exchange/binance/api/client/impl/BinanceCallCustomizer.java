@@ -12,12 +12,15 @@ public class BinanceCallCustomizer {
 
     private static final String eq = "=";
 
-    public static void customize(String apiKey, String secret, AsyncHttpClientCallFactory.AsyncHttpClientCallFactoryBuilder builder) {
+    public static void customize(String apiKey, String secret,
+        AsyncHttpClientCallFactory.AsyncHttpClientCallFactoryBuilder builder) {
         if (StringUtils.isNotEmpty(apiKey) && StringUtils.isNotEmpty(secret)) {
-            builder.callCustomizer(c -> c.requestCustomizer( r -> {
+            builder.callCustomizer(c -> c.requestCustomizer(r -> {
                 Request original = r.build();
-                boolean isApiKeyRequired = original.getHeaders().contains(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_APIKEY);
-                boolean isSignatureRequired = original.getHeaders().contains(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED);
+                boolean isApiKeyRequired =
+                    original.getHeaders().contains(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_APIKEY);
+                boolean isSignatureRequired =
+                    original.getHeaders().contains(BinanceApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED);
 
                 // Endpoint requires sending a valid API-KEY
                 if (isApiKeyRequired || isSignatureRequired) {
@@ -28,8 +31,8 @@ public class BinanceCallCustomizer {
                 // Endpoint requires signing the payload
                 if (isSignatureRequired) {
                     String payload = original.getQueryParams().stream()
-                            .map(e -> e.getName() + eq + e.getValue())
-                            .collect(Collectors.joining("&"));
+                        .map(e -> e.getName() + eq + e.getValue())
+                        .collect(Collectors.joining("&"));
                     if (!StringUtils.isEmpty(payload)) {
                         String signature = HmacSHA256Signer.sign(payload, secret);
                         r.addQueryParam("signature", signature);

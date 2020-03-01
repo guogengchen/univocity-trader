@@ -6,5 +6,5 @@ import java.util.*;
 
 public interface IntervalListener extends EventListener {
 
-	void intervalUpdated(Candle from, Candle to);
+    void intervalUpdated(Candle from, Candle to);
 }

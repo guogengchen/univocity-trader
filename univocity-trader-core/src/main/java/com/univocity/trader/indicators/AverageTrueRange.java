@@ -9,20 +9,20 @@ import com.univocity.trader.strategy.*;
  */
 public class AverageTrueRange extends ModifiedMovingAverage {
 
-	private final TrueRange tr;
+    private final TrueRange tr;
 
-	public AverageTrueRange(int length, TimeInterval interval) {
-		super(length, interval);
-		this.tr = new TrueRange(interval);
-	}
+    public AverageTrueRange(int length, TimeInterval interval) {
+        super(length, interval);
+        this.tr = new TrueRange(interval);
+    }
 
-	protected double extractValue(Candle candle, boolean updating) {
-		tr.accumulate(candle);
-		return tr.getValue();
-	}
+    protected double extractValue(Candle candle, boolean updating) {
+        tr.accumulate(candle);
+        return tr.getValue();
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{tr};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {tr};
+    }
 }

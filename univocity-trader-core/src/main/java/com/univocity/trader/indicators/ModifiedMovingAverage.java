@@ -11,27 +11,27 @@ import java.util.function.*;
  */
 public class ModifiedMovingAverage extends SingleValueCalculationIndicator {
 
-	private double multiplier;
+    private double multiplier;
 
-	public ModifiedMovingAverage(int length, TimeInterval interval) {
-		this(length, interval, c -> c.close);
-	}
+    public ModifiedMovingAverage(int length, TimeInterval interval) {
+        this(length, interval, c -> c.close);
+    }
 
-	public ModifiedMovingAverage(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
-		super(interval, valueGetter);
-		multiplier = 1.0 / length;
-	}
+    public ModifiedMovingAverage(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
+        super(interval, valueGetter);
+        multiplier = 1.0 / length;
+    }
 
-	@Override
-	protected double calculate(Candle candle, double value, double previousValue, boolean updating) {
-		if(getAccumulationCount() == 0){
-			return value;
-		}
-		return ((value - previousValue) * multiplier) + previousValue;
-	}
+    @Override
+    protected double calculate(Candle candle, double value, double previousValue, boolean updating) {
+        if (getAccumulationCount() == 0) {
+            return value;
+        }
+        return ((value - previousValue) * multiplier) + previousValue;
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }

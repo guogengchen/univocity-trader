@@ -8,27 +8,26 @@ import com.univocity.trader.utils.*;
  */
 public class IBIncomingCandles extends IncomingCandles<Candle> {
 
-	public IBIncomingCandles() {
-	}
+    public IBIncomingCandles() {}
 
-	public IBIncomingCandles(long timeout) {
-		super(timeout);
-	}
+    public IBIncomingCandles(long timeout) {
+        super(timeout);
+    }
 
-	private Candle prev;
-	private int increment;
+    private Candle prev;
+    private int increment;
 
-	@Override
-	public void add(Candle candle) {
-		//Workaround to deal with IB ticks that don't have millisecond precision and will come in the same second
-		if(prev != null && prev.openTime == candle.openTime && prev.closeTime == candle.closeTime){
-			increment++;
-			candle.closeTime += increment;
-			candle.openTime += increment;
-		} else {
-			prev = candle;
-			increment = 0;
-		}
-		super.add(candle);
-	}
+    @Override
+    public void add(Candle candle) {
+        // Workaround to deal with IB ticks that don't have millisecond precision and will come in the same second
+        if (prev != null && prev.openTime == candle.openTime && prev.closeTime == candle.closeTime) {
+            increment++;
+            candle.closeTime += increment;
+            candle.openTime += increment;
+        } else {
+            prev = candle;
+            increment = 0;
+        }
+        super.add(candle);
+    }
 }

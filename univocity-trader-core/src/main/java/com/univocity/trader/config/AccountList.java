@@ -6,56 +6,61 @@ import java.util.stream.*;
 
 public class AccountList<T extends AccountConfiguration<T>> implements ConfigurationGroup {
 
-	private Map<String, T> accounts = new LinkedHashMap<>();
-	private final Function<String, T> accountConfigurationSupplier;
+    private Map<String, T> accounts = new LinkedHashMap<>();
+    private final Function<String, T> accountConfigurationSupplier;
 
-	AccountList(Function<String, T> accountConfigurationSupplier) {
-		this.accountConfigurationSupplier = accountConfigurationSupplier;
-	}
+    AccountList(Function<String, T> accountConfigurationSupplier) {
+        this.accountConfigurationSupplier = accountConfigurationSupplier;
+    }
 
-	public void readProperties(PropertyBasedConfiguration properties) {
-		List<String> accountIds = properties.getOptionalList("accounts");
+    public void readProperties(PropertyBasedConfiguration properties) {
+        List<String> accountIds = properties.getOptionalList("accounts");
 
-		if (!accountIds.isEmpty()) {
-			for (String accountId : accountIds) {
-				if (accounts.containsKey(accountId)) {
-					throw new IllegalConfigurationException("Duplicate account ID in properties file: " + accountId);
-				}
-				account(accountId).readProperties(accountId, properties);
-			}
-		} else {
-			//look for an account without ID.
-			account().readProperties("", properties);
-		}
-	}
+        if (!accountIds.isEmpty()) {
+            for (String accountId : accountIds) {
+                if (accounts.containsKey(accountId)) {
+                    throw new IllegalConfigurationException("Duplicate account ID in properties file: " + accountId);
+                }
+                account(accountId).readProperties(accountId, properties);
+            }
+        } else {
+            // look for an account without ID.
+            account().readProperties("", properties);
+        }
+    }
 
-	@Override
-	public boolean isConfigured() {
-		return !accounts.isEmpty() && accounts.values().stream().anyMatch(AccountConfiguration::isConfigured);
-	}
+    @Override
+    public boolean isConfigured() {
+        return !accounts.isEmpty() && accounts.values().stream().anyMatch(AccountConfiguration::isConfigured);
+    }
 
-	public final T account(String accountId) {
-		return accounts.computeIfAbsent(accountId, a -> accountConfigurationSupplier.apply(accountId));
-	}
+    public final T account(String accountId) {
+        return accounts.computeIfAbsent(accountId, a -> accountConfigurationSupplier.apply(accountId));
+    }
 
-	public final T account() {
-		if (accounts.size() == 1) {
-			return accounts.values().iterator().next();
-		} else if (accounts.size() > 1) {
-			throw new IllegalArgumentException("Please provide an account ID when multiple accounts are in use. Available accounts: " + accounts.keySet());
-		}
-		return account("");
-	}
+    public final T account() {
+        if (accounts.size() == 1) {
+            return accounts.values().iterator().next();
+        } else if (accounts.size() > 1) {
+            throw new IllegalArgumentException(
+                "Please provide an account ID when multiple accounts are in use. Available accounts: "
+                    + accounts.keySet());
+        }
+        return account("");
+    }
 
-	public List<T> accounts() {
-		List<T> out = accounts.values().stream().filter(AccountConfiguration::isConfigured).collect(Collectors.toList());
-		if (out.isEmpty()) {
-			out = accounts.values().stream().filter((a) -> !a.isConfigured()).collect(Collectors.toList());
-			if (!out.isEmpty()) {
-				T first = out.get(0);
-				throw new IllegalConfigurationException("No " + first.getClass().getName() + " account configured. Found " + out.size() + " partially configured accounts. " + first.getRequiredPropertyNames() + " not defined?");
-			}
-		}
-		return out;
-	}
+    public List<T> accounts() {
+        List<T> out =
+            accounts.values().stream().filter(AccountConfiguration::isConfigured).collect(Collectors.toList());
+        if (out.isEmpty()) {
+            out = accounts.values().stream().filter((a) -> !a.isConfigured()).collect(Collectors.toList());
+            if (!out.isEmpty()) {
+                T first = out.get(0);
+                throw new IllegalConfigurationException(
+                    "No " + first.getClass().getName() + " account configured. Found " + out.size()
+                        + " partially configured accounts. " + first.getRequiredPropertyNames() + " not defined?");
+            }
+        }
+        return out;
+    }
 }

@@ -6,8 +6,8 @@ import com.univocity.trader.chart.annotation.*;
 @UIBoundClass(updateProcessor = RulerUpdateProcessor.class)
 public class TimeRulerController extends RulerController<TimeRulerController> {
 
-	public TimeRulerController(TimeRuler ruler) {
-		super(ruler);
-	}
+    public TimeRulerController(TimeRuler ruler) {
+        super(ruler);
+    }
 
 }

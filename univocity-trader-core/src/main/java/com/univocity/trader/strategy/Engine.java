@@ -16,84 +16,85 @@ import static com.univocity.trader.utils.NewInstances.*;
  */
 public class Engine {
 
-	private static final Logger log = LoggerFactory.getLogger(Engine.class);
+    private static final Logger log = LoggerFactory.getLogger(Engine.class);
 
-	private final Trader trader;
-	private final Strategy[] strategies;
-	private final Strategy[] plainStrategies;
-	private final IndicatorGroup[] indicatorGroups;
+    private final Trader trader;
+    private final Strategy[] strategies;
+    private final Strategy[] plainStrategies;
+    private final IndicatorGroup[] indicatorGroups;
 
-	private final TradingManager tradingManager;
-	private final Aggregator[] aggregators;
+    private final TradingManager tradingManager;
+    private final Aggregator[] aggregators;
 
-	public Engine(TradingManager tradingManager, Set<Object> allInstances) {
-		this(tradingManager, Parameters.NULL, allInstances);
-	}
+    public Engine(TradingManager tradingManager, Set<Object> allInstances) {
+        this(tradingManager, Parameters.NULL, allInstances);
+    }
 
-	public Engine(TradingManager tradingManager, Parameters parameters, Set<Object> allInstances) {
-		this.tradingManager = tradingManager;
-		this.trader = new Trader(tradingManager, parameters, allInstances);
+    public Engine(TradingManager tradingManager, Parameters parameters, Set<Object> allInstances) {
+        this.tradingManager = tradingManager;
+        this.trader = new Trader(tradingManager, parameters, allInstances);
 
-		NewInstances<Strategy> strategies = tradingManager.getAccount().configuration().strategies();
-		this.strategies = getInstances(tradingManager.getSymbol(), parameters, strategies, "Strategy", true, allInstances);
+        NewInstances<Strategy> strategies = tradingManager.getAccount().configuration().strategies();
+        this.strategies =
+            getInstances(tradingManager.getSymbol(), parameters, strategies, "Strategy", true, allInstances);
 
-		Set<IndicatorGroup> groups = new LinkedHashSet<>();
-		Set<Strategy> plainStrategies = new LinkedHashSet<>();
-		for (Strategy strategy : this.strategies) {
-			if (strategy instanceof IndicatorGroup) {
-				groups.add((IndicatorGroup) strategy);
-			} else {
-				plainStrategies.add(strategy);
-			}
-		}
-		Collections.addAll(groups, trader.monitors());
-		indicatorGroups = groups.toArray(new IndicatorGroup[0]);
+        Set<IndicatorGroup> groups = new LinkedHashSet<>();
+        Set<Strategy> plainStrategies = new LinkedHashSet<>();
+        for (Strategy strategy : this.strategies) {
+            if (strategy instanceof IndicatorGroup) {
+                groups.add((IndicatorGroup)strategy);
+            } else {
+                plainStrategies.add(strategy);
+            }
+        }
+        Collections.addAll(groups, trader.monitors());
+        indicatorGroups = groups.toArray(new IndicatorGroup[0]);
 
-		Aggregator rootAggregator = new Aggregator(trader.symbol() + parameters.toString());
-		for (int i = 0; i < indicatorGroups.length; i++) {
-			indicatorGroups[i].initialize(rootAggregator);
-		}
-		aggregators = rootAggregator.getAggregators();
+        Aggregator rootAggregator = new Aggregator(trader.symbol() + parameters.toString());
+        for (int i = 0; i < indicatorGroups.length; i++) {
+            indicatorGroups[i].initialize(rootAggregator);
+        }
+        aggregators = rootAggregator.getAggregators();
 
-		this.plainStrategies = plainStrategies.toArray(new Strategy[0]);
-	}
+        this.plainStrategies = plainStrategies.toArray(new Strategy[0]);
+    }
 
-	public void process(Candle candle, boolean initializing) {
-		for (int i = 0; i < aggregators.length; i++)
-			aggregators[i].aggregate(candle);
+    public void process(Candle candle, boolean initializing) {
+        for (int i = 0; i < aggregators.length; i++)
+            aggregators[i].aggregate(candle);
 
-		for (int i = 0; i < indicatorGroups.length; i++) {
-			indicatorGroups[i].accumulate(candle);
-		}
+        for (int i = 0; i < indicatorGroups.length; i++) {
+            indicatorGroups[i].accumulate(candle);
+        }
 
-		if (initializing) { //ignore any signals and just all strategies to populate their internal state
-			for (int i = 0; i < plainStrategies.length; i++) {
-				plainStrategies[i].getSignal(candle);
-			}
-			return;
-		}
+        if (initializing) { // ignore any signals and just all strategies to populate their internal state
+            for (int i = 0; i < plainStrategies.length; i++) {
+                plainStrategies[i].getSignal(candle);
+            }
+            return;
+        }
 
-		//for simulations only - tries to fill open orders using the latest candle information loaded from history.
-		tradingManager.updateOpenOrders(trader.symbol(), candle);
+        // for simulations only - tries to fill open orders using the latest candle information loaded from history.
+        tradingManager.updateOpenOrders(trader.symbol(), candle);
 
+        for (int i = 0; i < strategies.length; i++) {
+            Strategy strategy = strategies[i];
+            Signal signal = strategy.getSignal(candle);
+            try {
+                trader.trade(candle, signal, strategy);
+            } catch (Exception e) {
+                log.error("Error processing " + signal + " " + trader.symbol() + " generated using candle (" + candle
+                    + ") from " + strategy, e);
+            }
+        }
+    }
 
-		for (int i = 0; i < strategies.length; i++) {
-			Strategy strategy = strategies[i];
-			Signal signal = strategy.getSignal(candle);
-			try {
-				trader.trade(candle, signal, strategy);
-			} catch (Exception e) {
-				log.error("Error processing " + signal + " " + trader.symbol() + " generated using candle (" + candle + ") from " + strategy, e);
-			}
-		}
-	}
+    public TradingManager getTradingManager() {
+        return tradingManager;
+    }
 
-	public TradingManager getTradingManager() {
-		return tradingManager;
-	}
-
-	public String getSymbol() {
-		return tradingManager.getSymbol();
-	}
+    public String getSymbol() {
+        return tradingManager.getSymbol();
+    }
 
 }

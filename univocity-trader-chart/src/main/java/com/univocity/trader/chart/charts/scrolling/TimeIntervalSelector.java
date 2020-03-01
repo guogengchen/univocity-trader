@@ -1,6 +1,5 @@
 package com.univocity.trader.chart.charts.scrolling;
 
-
 import com.univocity.trader.candles.*;
 import com.univocity.trader.chart.*;
 import com.univocity.trader.chart.charts.*;
@@ -13,231 +12,232 @@ import java.awt.image.*;
 import java.util.concurrent.atomic.*;
 
 public class TimeIntervalSelector extends ChartCanvas {
-	private TimeIntervalHandle startHandle = new TimeIntervalHandle(true);
-	private TimeIntervalHandle endHandle = new TimeIntervalHandle(false);
-	private TimeIntervalHandle boundaryHandle = endHandle;
+    private TimeIntervalHandle startHandle = new TimeIntervalHandle(true);
+    private TimeIntervalHandle endHandle = new TimeIntervalHandle(false);
+    private TimeIntervalHandle boundaryHandle = endHandle;
 
-	private static final Color glassGray = new Color(128, 128, 128, 96);
-	private static final Color glassWhite = new Color(255, 255, 255, 128);
-	private Point gradientStart = new Point(0, 0);
-	private Point gradientEnd = new Point(0, 0);
+    private static final Color glassGray = new Color(128, 128, 128, 96);
+    private static final Color glassWhite = new Color(255, 255, 255, 128);
+    private Point gradientStart = new Point(0, 0);
+    private Point gradientEnd = new Point(0, 0);
 
-	private BasicChart<?> chart;
-	private BufferedImage background;
-	private final EventListenerList listenerList = new EventListenerList();
+    private BasicChart<?> chart;
+    private BufferedImage background;
+    private final EventListenerList listenerList = new EventListenerList();
 
-	private Candle previousStart;
-	private Candle previousEnd;
+    private Candle previousStart;
+    private Candle previousEnd;
 
-	private boolean dataUpdated;
-	private CandleHistory candleHistory;
-	private int candlesInRange;
+    private boolean dataUpdated;
+    private CandleHistory candleHistory;
+    private int candlesInRange;
 
-	public TimeIntervalSelector(CandleHistory fullCandleHistory, BasicChart<?> chart) {
-		this.candleHistory = fullCandleHistory;
-		this.chart = chart;
-		super.addChart(chart);
-		this.setPreferredSize(new Dimension(100, 100));
+    public TimeIntervalSelector(CandleHistory fullCandleHistory, BasicChart<?> chart) {
+        this.candleHistory = fullCandleHistory;
+        this.chart = chart;
+        super.addChart(chart);
+        this.setPreferredSize(new Dimension(100, 100));
 
-		addMouseMotionListener(new MouseAdapter() {
-			private TimeIntervalHandle selectedHandle;
-			private boolean mouseOverGlass = false;
-			private int glassDragStart;
+        addMouseMotionListener(new MouseAdapter() {
+            private TimeIntervalHandle selectedHandle;
+            private boolean mouseOverGlass = false;
+            private int glassDragStart;
 
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				if (selectedHandle != null) {
-					moveHandle(selectedHandle, e.getPoint().x);
-					invokeRepaint();
-				} else if (mouseOverGlass) {
-					int x = e.getPoint().x;
-					int pixelsToMove = x - glassDragStart;
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (selectedHandle != null) {
+                    moveHandle(selectedHandle, e.getPoint().x);
+                    invokeRepaint();
+                } else if (mouseOverGlass) {
+                    int x = e.getPoint().x;
+                    int pixelsToMove = x - glassDragStart;
 
-					pixelsToMove = startHandle.getMovablePixels(pixelsToMove);
-					if (pixelsToMove != 0) {
-						int toMove = endHandle.getMovablePixels(pixelsToMove);
-						pixelsToMove = Math.min(toMove, pixelsToMove);
-					}
+                    pixelsToMove = startHandle.getMovablePixels(pixelsToMove);
+                    if (pixelsToMove != 0) {
+                        int toMove = endHandle.getMovablePixels(pixelsToMove);
+                        pixelsToMove = Math.min(toMove, pixelsToMove);
+                    }
 
-					if (pixelsToMove != 0) {
-						glassDragStart = x;
-						startHandle.move(pixelsToMove);
-						endHandle.move(pixelsToMove);
+                    if (pixelsToMove != 0) {
+                        glassDragStart = x;
+                        startHandle.move(pixelsToMove);
+                        endHandle.move(pixelsToMove);
 
-						updateHandleBoundaries();
+                        updateHandleBoundaries();
 
-						boolean movingRight = pixelsToMove > 0;
+                        boolean movingRight = pixelsToMove > 0;
 
-						SwingUtilities.invokeLater(() -> {
-							int startIndex = chart.getCandleIndexAtCoordinate(startHandle.getPosition());
-							int endIndex = startIndex + candlesInRange;
+                        SwingUtilities.invokeLater(() -> {
+                            int startIndex = chart.getCandleIndexAtCoordinate(startHandle.getPosition());
+                            int endIndex = startIndex + candlesInRange;
 
-							startHandle.candle = chart.getCandleAtIndex(startIndex);
-							endHandle.candle = chart.getCandleAtIndex(endIndex);
+                            startHandle.candle = chart.getCandleAtIndex(startIndex);
+                            endHandle.candle = chart.getCandleAtIndex(endIndex);
 
-							boundaryHandle = movingRight ? endHandle : startHandle;
+                            boundaryHandle = movingRight ? endHandle : startHandle;
 
-							repaint();
-						});
-					}
-				} else {
-					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				}
-			}
+                            repaint();
+                        });
+                    }
+                } else {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                }
+            }
 
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				Point cursor = e.getPoint();
-				selectedHandle = startHandle.isCursorOver(cursor) ? startHandle : null;
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                Point cursor = e.getPoint();
+                selectedHandle = startHandle.isCursorOver(cursor) ? startHandle : null;
 
-				if (selectedHandle == null) {
-					selectedHandle = endHandle.isCursorOver(cursor) ? endHandle : null;
-				}
+                if (selectedHandle == null) {
+                    selectedHandle = endHandle.isCursorOver(cursor) ? endHandle : null;
+                }
 
-				if (selectedHandle != null) {
-					setCursor(selectedHandle.getCursor());
-				} else {
-					mouseOverGlass = cursor.x > startHandle.getPosition() && cursor.x < endHandle.getPosition();
-					if (mouseOverGlass) {
-						glassDragStart = cursor.x;
-						setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-					} else {
-						setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					}
-				}
-			}
+                if (selectedHandle != null) {
+                    setCursor(selectedHandle.getCursor());
+                } else {
+                    mouseOverGlass = cursor.x > startHandle.getPosition() && cursor.x < endHandle.getPosition();
+                    if (mouseOverGlass) {
+                        glassDragStart = cursor.x;
+                        setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+                    } else {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                }
+            }
 
-			private void moveHandle(TimeIntervalHandle handle, int x) {
-				boundaryHandle = handle;
-				updateHandleBoundaries();
-				handle.setPosition(x);
-				handle.candle = chart.getCandleAtCoordinate(handle.getPosition());
-			}
-		});
+            private void moveHandle(TimeIntervalHandle handle, int x) {
+                boundaryHandle = handle;
+                updateHandleBoundaries();
+                handle.setPosition(x);
+                handle.candle = chart.getCandleAtCoordinate(handle.getPosition());
+            }
+        });
 
-	}
+    }
 
-	private final AtomicBoolean intervalUpdateEventRunning = new AtomicBoolean(false);
+    private final AtomicBoolean intervalUpdateEventRunning = new AtomicBoolean(false);
 
-	void fireIntervalChanged(Candle from, Candle to) {
-		if (!intervalUpdateEventRunning.get()) {
-			intervalUpdateEventRunning.set(true);
-			SwingUtilities.invokeLater(() -> {
-				IntervalListener[] listeners = listenerList.getListeners(IntervalListener.class);
-				for (IntervalListener listener : listeners) {
-					listener.intervalUpdated(from, to);
-				}
-				intervalUpdateEventRunning.set(false);
-			});
-		}
-	}
+    void fireIntervalChanged(Candle from, Candle to) {
+        if (!intervalUpdateEventRunning.get()) {
+            intervalUpdateEventRunning.set(true);
+            SwingUtilities.invokeLater(() -> {
+                IntervalListener[] listeners = listenerList.getListeners(IntervalListener.class);
+                for (IntervalListener listener : listeners) {
+                    listener.intervalUpdated(from, to);
+                }
+                intervalUpdateEventRunning.set(false);
+            });
+        }
+    }
 
-	public void addIntervalListener(IntervalListener listener) {
-		this.listenerList.add(IntervalListener.class, listener);
-	}
+    public void addIntervalListener(IntervalListener listener) {
+        this.listenerList.add(IntervalListener.class, listener);
+    }
 
-	public void removeIntervalListener(IntervalListener listener) {
-		this.listenerList.remove(IntervalListener.class, listener);
-	}
+    public void removeIntervalListener(IntervalListener listener) {
+        this.listenerList.remove(IntervalListener.class, listener);
+    }
 
-	private void adjustBoundary() {
-		int x = boundaryHandle.getPosition();
+    private void adjustBoundary() {
+        int x = boundaryHandle.getPosition();
 
-		if (x - boundaryHandle.getWidth() <= 0) {
-			boundaryHandle.candle = chart.candleHistory.getFirst();
-			boundaryHandle.setPosition(0);
-		} else if (x + boundaryHandle.getWidth() >= width) {
-			boundaryHandle.candle = candleHistory.getLast();
-		}
+        if (x - boundaryHandle.getWidth() <= 0) {
+            boundaryHandle.candle = chart.candleHistory.getFirst();
+            boundaryHandle.setPosition(0);
+        } else if (x + boundaryHandle.getWidth() >= width) {
+            boundaryHandle.candle = candleHistory.getLast();
+        }
 
-		if (endHandle.candle == candleHistory.getLast()) {
-			endHandle.setPosition(getWidth());
-		}
-	}
+        if (endHandle.candle == candleHistory.getLast()) {
+            endHandle.setPosition(getWidth());
+        }
+    }
 
-	@Override
-	public void paintComponent(Graphics g1d) {
-		super.paintComponent(g1d);
-		Graphics2D g = (Graphics2D) g1d;
+    @Override
+    public void paintComponent(Graphics g1d) {
+        super.paintComponent(g1d);
+        Graphics2D g = (Graphics2D)g1d;
 
-		if (dataUpdated || background == null || background.getHeight() != this.getHeight() || background.getWidth() != this.getWidth()) {
-			background = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
-			Graphics2D backgroundGraphics = (Graphics2D) background.getGraphics();
-			backgroundGraphics.setColor(Color.WHITE);
-			backgroundGraphics.fillRect(0, 0, getWidth(), getHeight());
+        if (dataUpdated || background == null || background.getHeight() != this.getHeight()
+            || background.getWidth() != this.getWidth()) {
+            background = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D backgroundGraphics = (Graphics2D)background.getGraphics();
+            backgroundGraphics.setColor(Color.WHITE);
+            backgroundGraphics.fillRect(0, 0, getWidth(), getHeight());
 
-			chart.canvas.setBounds(0, 0, getWidth(), getHeight());
-			chart.paintComponent(backgroundGraphics);
+            chart.canvas.setBounds(0, 0, getWidth(), getHeight());
+            chart.paintComponent(backgroundGraphics);
 
-			startHandle.draw(g, this, chart);
-			endHandle.draw(g, this, chart);
-			dataUpdated = false;
-			updateHandleBoundaries();
-		}
-		g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+            startHandle.draw(g, this, chart);
+            endHandle.draw(g, this, chart);
+            dataUpdated = false;
+            updateHandleBoundaries();
+        }
+        g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
 
-		adjustBoundary();
+        adjustBoundary();
 
-		startHandle.draw(g, this, null);
-		endHandle.draw(g, this, null);
-		drawGlass(g);
+        startHandle.draw(g, this, null);
+        endHandle.draw(g, this, null);
+        drawGlass(g);
 
-		if (startHandle.candle != previousStart || endHandle.candle != previousEnd) {
-			previousStart = startHandle.candle;
-			previousEnd = endHandle.candle;
+        if (startHandle.candle != previousStart || endHandle.candle != previousEnd) {
+            previousStart = startHandle.candle;
+            previousEnd = endHandle.candle;
 
-			candlesInRange = candleHistory.indexOf(endHandle.candle) - candleHistory.indexOf(startHandle.candle);
+            candlesInRange = candleHistory.indexOf(endHandle.candle) - candleHistory.indexOf(startHandle.candle);
 
-			fireIntervalChanged(startHandle.candle, endHandle.candle);
-		}
-	}
+            fireIntervalChanged(startHandle.candle, endHandle.candle);
+        }
+    }
 
-	private void updateHandleBoundaries() {
-		int handleWidths = startHandle.getWidth() + endHandle.getWidth();
-		endHandle.setMinPosition(startHandle.getPosition() + handleWidths);
-		endHandle.setMaxPosition(getWidth());
-		startHandle.setMaxPosition(endHandle.getPosition() - handleWidths);
-	}
+    private void updateHandleBoundaries() {
+        int handleWidths = startHandle.getWidth() + endHandle.getWidth();
+        endHandle.setMinPosition(startHandle.getPosition() + handleWidths);
+        endHandle.setMaxPosition(getWidth());
+        startHandle.setMaxPosition(endHandle.getPosition() - handleWidths);
+    }
 
-	private void drawGlass(Graphics2D g) {
-		int start = startHandle.getPosition() + startHandle.getWidth();
-		int end = endHandle.getPosition() - endHandle.getWidth() - start;
-		gradientStart.x = getWidth() / 2;
-		gradientStart.y = -50;
-		gradientEnd.x = getWidth() / 2;
-		gradientEnd.y = getHeight() + 50;
+    private void drawGlass(Graphics2D g) {
+        int start = startHandle.getPosition() + startHandle.getWidth();
+        int end = endHandle.getPosition() - endHandle.getWidth() - start;
+        gradientStart.x = getWidth() / 2;
+        gradientStart.y = -50;
+        gradientEnd.x = getWidth() / 2;
+        gradientEnd.y = getHeight() + 50;
 
-		g.setPaint(new GradientPaint(gradientStart, glassGray, gradientEnd, glassWhite));
-		g.fillRect(start, 0, end, getHeight());
-	}
+        g.setPaint(new GradientPaint(gradientStart, glassGray, gradientEnd, glassWhite));
+        g.fillRect(start, 0, end, getHeight());
+    }
 
-	public void dataUpdated() {
-		this.dataUpdated = true;
+    public void dataUpdated() {
+        this.dataUpdated = true;
 
-		Candle first = candleHistory.getFirst();
-		if (startHandle.candle == null) {
-			startHandle.candle = first;
-		}
+        Candle first = candleHistory.getFirst();
+        if (startHandle.candle == null) {
+            startHandle.candle = first;
+        }
 
-		Candle last = candleHistory.getLast();
-		if (endHandle.candle == null) {
-			endHandle.candle = last;
-		}
+        Candle last = candleHistory.getLast();
+        if (endHandle.candle == null) {
+            endHandle.candle = last;
+        }
 
-		//looking at most recent history, update view
-		if (endHandle.candle == chart.candleHistory.getLast() && endHandle.candle != last) {
-			endHandle.candle = last;
-			Candle firstCandleInRange = candleHistory.get(candleHistory.size() - 1 - candlesInRange);
-			if (firstCandleInRange != null) {
-				startHandle.candle = firstCandleInRange;
-			}
-		}
+        // looking at most recent history, update view
+        if (endHandle.candle == chart.candleHistory.getLast() && endHandle.candle != last) {
+            endHandle.candle = last;
+            Candle firstCandleInRange = candleHistory.get(candleHistory.size() - 1 - candlesInRange);
+            if (firstCandleInRange != null) {
+                startHandle.candle = firstCandleInRange;
+            }
+        }
 
-		chart.candleHistory.updateView(first, last);
-		invokeRepaint();
-	}
+        chart.candleHistory.updateView(first, last);
+        invokeRepaint();
+    }
 
-	public boolean lookingAtRecentHistory() {
-		return endHandle.candle == candleHistory.getLast();
-	}
+    public boolean lookingAtRecentHistory() {
+        return endHandle.candle == candleHistory.getLast();
+    }
 }

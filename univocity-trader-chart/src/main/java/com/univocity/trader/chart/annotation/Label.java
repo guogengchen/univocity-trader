@@ -6,5 +6,5 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Inherited
 public @interface Label {
-	String value();
+    String value();
 }

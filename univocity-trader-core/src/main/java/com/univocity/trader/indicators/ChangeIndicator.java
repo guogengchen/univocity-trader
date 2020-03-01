@@ -9,38 +9,38 @@ import java.util.function.*;
 
 public class ChangeIndicator extends SingleValueIndicator {
 
-	private double value;
-	private double startingPoint;
+    private double value;
+    private double startingPoint;
 
-	public ChangeIndicator(TimeInterval interval) {
-		this(interval, c -> c.close);
-	}
+    public ChangeIndicator(TimeInterval interval) {
+        this(interval, c -> c.close);
+    }
 
-	public ChangeIndicator(TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
-		super(interval, valueGetter);
-	}
+    public ChangeIndicator(TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
+        super(interval, valueGetter);
+    }
 
-	@Override
-	protected boolean process(Candle candle, double value, boolean updating) {
-		if (getAccumulationCount() != 0) {
-			this.value = Trade.positivePriceChangePct(startingPoint, value);
-			if (!updating) {
-				startingPoint = value;
-			}
-		} else {
-			startingPoint = value;
-		}
+    @Override
+    protected boolean process(Candle candle, double value, boolean updating) {
+        if (getAccumulationCount() != 0) {
+            this.value = Trade.positivePriceChangePct(startingPoint, value);
+            if (!updating) {
+                startingPoint = value;
+            }
+        } else {
+            startingPoint = value;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public double getValue() {
-		return value;
-	}
+    @Override
+    public double getValue() {
+        return value;
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }

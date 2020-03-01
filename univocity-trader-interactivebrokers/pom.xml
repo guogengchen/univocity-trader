@@ -21,7 +21,7 @@
 			<artifactId>twsapi</artifactId>
 			<version>7.979.01</version>
 			<scope>system</scope>
-			<systemPath>${user.home}/dev/IBJts/source/JavaClient/TwsApi.jar</systemPath>
+			<systemPath>/opt/twsapi/IBJts/source/JavaClient/TwsApi.jar</systemPath>
 		</dependency>
 	
 

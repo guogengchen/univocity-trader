@@ -6,9 +6,9 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Inherited
 public @interface SpinnerBound {
-	int minimum() default 1;
+    int minimum() default 1;
 
-	int maximum() default -1;
+    int maximum() default -1;
 
-	int increment() default 1;
+    int increment() default 1;
 }

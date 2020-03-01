@@ -14,50 +14,49 @@ import static com.univocity.trader.exchange.interactivebrokers.SecurityType.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
 public class ForexMarketSimulation {
-	public static void main(String... args) {
-		InteractiveBrokers.Simulator simulator = InteractiveBrokers.simulator();
+    public static void main(String... args) {
+        InteractiveBrokers.Simulator simulator = InteractiveBrokers.simulator();
 
-//		TODO: configure your database connection as needed. By default MySQL will be used
-//		simulator.configure().database()
-//				.jdbcDriver("my.database.DriverClass")
-//				.jdbcUrl("jdbc:mydb://localhost:5555/database")
-//				.user("admin")
-//				.password("qwerty");
+        // TODO: configure your database connection as needed. By default MySQL will be used
+        // simulator.configure().database()
+        // .jdbcDriver("my.database.DriverClass")
+        // .jdbcUrl("jdbc:mydb://localhost:5555/database")
+        // .user("admin")
+        // .password("qwerty");
 
-		//you can test with one or more accounts at the same time
-		Account account = simulator.configure().account();
+        // you can test with one or more accounts at the same time
+        Account account = simulator.configure().account();
 
-		account
-				.referenceCurrency("GBP") //Balances will be calculated using the reference currency.
-				.tradeWith(FOREX, "EUR", "GBP");
+        account
+            .referenceCurrency("GBP") // Balances will be calculated using the reference currency.
+            .tradeWith(FOREX, "EUR", "GBP");
 
-		account
-				.minimumInvestmentAmountPerTrade(500.0);
+        account
+            .minimumInvestmentAmountPerTrade(500.0);
 
-		account.strategies().add(ScalpingStrategy::new);
-		account.monitors().add(ScalpingStrategyMonitor::new);
+        account.strategies().add(ScalpingStrategy::new);
+        account.monitors().add(ScalpingStrategyMonitor::new);
 
-		account.listeners()
-				.add(new OrderExecutionToLog())
-				.add((symbol) -> new SimpleStrategyStatistics(symbol))
-		;
+        account.listeners()
+            .add(new OrderExecutionToLog())
+            .add((symbol) -> new SimpleStrategyStatistics(symbol));
 
-		Simulation simulation = simulator.configure().simulation();
-		simulation.initialFunds(1000.0)
-				.tradingFees(SimpleTradingFees.percentage(0.0)) // NO FEE WARNING!!
-				.fillOrdersOnPriceMatch()
-				.resumeBackfill(false)
-				.simulateTo(LocalDateTime.now());
+        Simulation simulation = simulator.configure().simulation();
+        simulation.initialFunds(1000.0)
+            .tradingFees(SimpleTradingFees.percentage(0.0)) // NO FEE WARNING!!
+            .fillOrdersOnPriceMatch()
+            .resumeBackfill(false)
+            .simulateTo(LocalDateTime.now());
 
-		simulator.symbolInformation("GBP").priceDecimalPlaces(5).quantityDecimalPlaces(2);
-		simulator.symbolInformation("EURGBP").priceDecimalPlaces(5).quantityDecimalPlaces(2);
+        simulator.symbolInformation("GBP").priceDecimalPlaces(5).quantityDecimalPlaces(2);
+        simulator.symbolInformation("EURGBP").priceDecimalPlaces(5).quantityDecimalPlaces(2);
 
-		//Interval of 1ms = REAL TIME TICKS
-		simulator.configure().tickInterval(TimeInterval.millis(1));
+        // Interval of 1ms = REAL TIME TICKS
+        simulator.configure().tickInterval(TimeInterval.millis(1));
 
-//		execute simulation
-//		simulator.run();
+        // execute simulation
+        // simulator.run();
 
-		simulator.backfillHistory("EURGBP");
-	}
+        simulator.backfillHistory("EURGBP");
+    }
 }

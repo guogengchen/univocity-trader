@@ -1,6 +1,5 @@
 package com.univocity.trader.tickers;
 
-
 import com.univocity.parsers.annotations.*;
 
 /**
@@ -8,34 +7,36 @@ import com.univocity.parsers.annotations.*;
  */
 public class Ticker {
 
-	public enum Type {
-		crypto, fiat, reference, stock, option
-	}
+    public enum Type {
+        crypto,
+        fiat,
+        reference,
+        stock,
+        option
+    }
 
+    @Parsed
+    private String symbol;
 
-	@Parsed
-	private String symbol;
+    @Parsed
+    private Type type;
 
-	@Parsed
-	private Type type;
+    @Parsed
+    private String description;
 
-	@Parsed
-	private String description;
+    // TODO: add symbol information details as well (see class com.univocity.trader.candles.SymbolInformation)
 
-	//TODO: add symbol information details as well (see class com.univocity.trader.candles.SymbolInformation)
+    private Ticker() {}
 
-	private Ticker() {
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getSymbol() {
+        return symbol;
+    }
 
-	public String getSymbol() {
-		return symbol;
-	}
-
-	public Type getType() {
-		return type;
-	}
+    public Type getType() {
+        return type;
+    }
 }

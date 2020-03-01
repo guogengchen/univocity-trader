@@ -12,11 +12,11 @@ import com.univocity.trader.simulation.*;
  */
 public interface OrderFillEmulator {
 
-	/**
-	 * Attempts to fill the given order using the information of a candle
-	 *
-	 * @param order  the order to fill
-	 * @param candle the latest candle received from history.
-	 */
-	void fillOrder(DefaultOrder order, Candle candle);
+    /**
+     * Attempts to fill the given order using the information of a candle
+     *
+     * @param order  the order to fill
+     * @param candle the latest candle received from history.
+     */
+    void fillOrder(DefaultOrder order, Candle candle);
 }

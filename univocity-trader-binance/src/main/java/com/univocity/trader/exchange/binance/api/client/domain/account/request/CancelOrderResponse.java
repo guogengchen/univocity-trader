@@ -12,68 +12,68 @@ import org.apache.commons.lang3.builder.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CancelOrderResponse {
 
-	private String symbol;
+    private String symbol;
 
-	private String origClientOrderId;
+    private String origClientOrderId;
 
-	private String orderId;
+    private String orderId;
 
-	private String clientOrderId;
+    private String clientOrderId;
 
-	private String status;
-	private String executedQty;
+    private String status;
+    private String executedQty;
 
-	public String getSymbol() {
-		return symbol;
-	}
+    public String getSymbol() {
+        return symbol;
+    }
 
-	public CancelOrderResponse setSymbol(String symbol) {
-		this.symbol = symbol;
-		return this;
-	}
+    public CancelOrderResponse setSymbol(String symbol) {
+        this.symbol = symbol;
+        return this;
+    }
 
-	public String getOrigClientOrderId() {
-		return origClientOrderId;
-	}
+    public String getOrigClientOrderId() {
+        return origClientOrderId;
+    }
 
-	public CancelOrderResponse setOrigClientOrderId(String origClientOrderId) {
-		this.origClientOrderId = origClientOrderId;
-		return this;
-	}
+    public CancelOrderResponse setOrigClientOrderId(String origClientOrderId) {
+        this.origClientOrderId = origClientOrderId;
+        return this;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public String getExecutedQty() {
-		return executedQty;
-	}
+    public String getExecutedQty() {
+        return executedQty;
+    }
 
-	public String getOrderId() {
-		return orderId;
-	}
+    public String getOrderId() {
+        return orderId;
+    }
 
-	public CancelOrderResponse setOrderId(String orderId) {
-		this.orderId = orderId;
-		return this;
-	}
+    public CancelOrderResponse setOrderId(String orderId) {
+        this.orderId = orderId;
+        return this;
+    }
 
-	public String getClientOrderId() {
-		return clientOrderId;
-	}
+    public String getClientOrderId() {
+        return clientOrderId;
+    }
 
-	public CancelOrderResponse setClientOrderId(String clientOrderId) {
-		this.clientOrderId = clientOrderId;
-		return this;
-	}
+    public CancelOrderResponse setClientOrderId(String clientOrderId) {
+        this.clientOrderId = clientOrderId;
+        return this;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-				.append("symbol", symbol)
-				.append("origClientOrderId", origClientOrderId)
-				.append("orderId", orderId)
-				.append("clientOrderId", clientOrderId)
-				.toString();
-	}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
+            .append("symbol", symbol)
+            .append("origClientOrderId", origClientOrderId)
+            .append("orderId", orderId)
+            .append("clientOrderId", clientOrderId)
+            .toString();
+    }
 }

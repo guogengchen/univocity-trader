@@ -18,120 +18,120 @@ import javax.mail.internet.*;
 import java.util.*;
 
 public class SmtpMailSender {
-	private static final Logger log = LoggerFactory.getLogger(SmtpMailSender.class);
+    private static final Logger log = LoggerFactory.getLogger(SmtpMailSender.class);
 
-	private JavaMailSender mailSender;
-	private EmailConfiguration config;
+    private JavaMailSender mailSender;
+    private EmailConfiguration config;
 
-	public SmtpMailSender(EmailConfiguration config) {
-		this.config = config;
-	}
+    public SmtpMailSender(EmailConfiguration config) {
+        this.config = config;
+    }
 
-	public String getSenderAddress(){
-		return config.smtpSender();
-	}
+    public String getSenderAddress() {
+        return config.smtpSender();
+    }
 
-	public Email newEmail(String[] to, String title, String content) {
-		if (ArrayUtils.isEmpty(to)) {
-			log.warn("Unable to send email. No recipient emails provided.");
-			return null;
-		}
+    public Email newEmail(String[] to, String title, String content) {
+        if (ArrayUtils.isEmpty(to)) {
+            log.warn("Unable to send email. No recipient emails provided.");
+            return null;
+        }
 
-		Email email = new Email();
-		email.setReplyTo(config.replyToAddress());
-		email.setBody(content);
-		email.setFrom(config.smtpSender());
-		email.setTitle(title);
-		email.setTo(to);
-		return email;
-	}
+        Email email = new Email();
+        email.setReplyTo(config.replyToAddress());
+        email.setBody(content);
+        email.setFrom(config.smtpSender());
+        email.setTitle(title);
+        email.setTo(to);
+        return email;
+    }
 
-	public boolean sendEmail(String[] to, String title, String content) {
-		Email email = newEmail(to, title, content);
-		if (email == null) {
-			return false;
-		}
+    public boolean sendEmail(String[] to, String title, String content) {
+        Email email = newEmail(to, title, content);
+        if (email == null) {
+            return false;
+        }
 
-		if (!isConfigured()) {
-			log.warn("Unable to send email. No email configuration available.");
-			return false;
-		}
+        if (!isConfigured()) {
+            log.warn("Unable to send email. No email configuration available.");
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	private boolean isConfigured() {
-		return config != null && config.isConfigured();
-	}
+    private boolean isConfigured() {
+        return config != null && config.isConfigured();
+    }
 
-	public JavaMailSender getMailSender() {
-		if (mailSender == null) {
-			synchronized (this) {
-				if (mailSender == null) {
-					JavaMailSenderImpl sender = new JavaMailSenderImpl();
-					sender.setHost(config.smtpHost());
+    public JavaMailSender getMailSender() {
+        if (mailSender == null) {
+            synchronized (this) {
+                if (mailSender == null) {
+                    JavaMailSenderImpl sender = new JavaMailSenderImpl();
+                    sender.setHost(config.smtpHost());
 
-					Properties properties = new Properties();
-					properties.put("mail.transport.protocol", "smtps");
-					if (config.smtpSSL()) {
-						properties.put("mail.smtps.starttls.enable", true);
-					}
-					properties.put("mail.smtps.auth", true);
+                    Properties properties = new Properties();
+                    properties.put("mail.transport.protocol", "smtps");
+                    if (config.smtpSSL()) {
+                        properties.put("mail.smtps.starttls.enable", true);
+                    }
+                    properties.put("mail.smtps.auth", true);
 
-					Integer port = config.smtpPort();
-					if (port != null && port != 0) {
-						properties.put("mail.smtps.socketFactory.port", port);
-						sender.setPort(port);
-					}
+                    Integer port = config.smtpPort();
+                    if (port != null && port != 0) {
+                        properties.put("mail.smtps.socketFactory.port", port);
+                        sender.setPort(port);
+                    }
 
-					properties.put("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-					properties.put("mail.smtps.socketFactory.fallback", false);
+                    properties.put("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                    properties.put("mail.smtps.socketFactory.fallback", false);
 
-					final String user = config.smtpUsername();
-					final char[] password = config.smtpPassword();
+                    final String user = config.smtpUsername();
+                    final char[] password = config.smtpPassword();
 
-					Session session = Session.getInstance(properties, new Authenticator() {
-						@Override
-						protected PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication(user, password == null ? null : new String(password));
-						}
-					});
+                    Session session = Session.getInstance(properties, new Authenticator() {
+                        @Override
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(user, password == null ? null : new String(password));
+                        }
+                    });
 
-					sender.setSession(session);
-					mailSender = sender;
-				}
-			}
-		}
-		return mailSender;
-	}
+                    sender.setSession(session);
+                    mailSender = sender;
+                }
+            }
+        }
+        return mailSender;
+    }
 
-	public void sendEmailViaSmtp(Email email) {
-		JavaMailSender mailSender = getMailSender();
-		if (mailSender == null) {
-			log.warn("Can't send e-mail: " + email + ". No mail sender available");
-			return;
-		}
+    public void sendEmailViaSmtp(Email email) {
+        JavaMailSender mailSender = getMailSender();
+        if (mailSender == null) {
+            log.warn("Can't send e-mail: " + email + ". No mail sender available");
+            return;
+        }
 
-		MimeMessage message = mailSender.createMimeMessage();
-		try {
-			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        MimeMessage message = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-			helper.setFrom(email.getFrom());
-			helper.setTo(email.getTo());
-			if (StringUtils.isNotBlank(email.getReplyTo())) {
-				helper.setReplyTo(email.getReplyTo());
-			}
+            helper.setFrom(email.getFrom());
+            helper.setTo(email.getTo());
+            if (StringUtils.isNotBlank(email.getReplyTo())) {
+                helper.setReplyTo(email.getReplyTo());
+            }
 
-			helper.setSubject(email.getTitle());
-			helper.setText(email.getBody());
-		} catch (MessagingException e) {
-			log.warn("Unable to write e-mail", e);
-		}
+            helper.setSubject(email.getTitle());
+            helper.setText(email.getBody());
+        } catch (MessagingException e) {
+            log.warn("Unable to write e-mail", e);
+        }
 
-		try {
-			mailSender.send(message);
-		} catch (MailException e) {
-			log.error("Error sending e-mail", e);
-		}
-	}
+        try {
+            mailSender.send(message);
+        } catch (MailException e) {
+            log.error("Error sending e-mail", e);
+        }
+    }
 }

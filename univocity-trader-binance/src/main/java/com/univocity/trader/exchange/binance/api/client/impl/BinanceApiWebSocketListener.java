@@ -59,7 +59,7 @@ public class BinanceApiWebSocketListener<T> implements WebSocketListener {
 
     @Override
     public void onClose(WebSocket websocket, int code, String reason) {
-        log.warn("WebSocket {} was closed... Code {}, Reason {}", wsName,code, reason);
+        log.warn("WebSocket {} was closed... Code {}, Reason {}", wsName, code, reason);
         callback.onClose();
     }
 

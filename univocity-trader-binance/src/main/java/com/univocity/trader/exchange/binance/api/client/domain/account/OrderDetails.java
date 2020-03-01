@@ -3,25 +3,25 @@ package com.univocity.trader.exchange.binance.api.client.domain.account;
 import com.univocity.trader.exchange.binance.api.client.domain.*;
 
 public interface OrderDetails {
-	String getSymbol();
+    String getSymbol();
 
-	Long getOrderId();
+    Long getOrderId();
 
-	String getClientOrderId();
+    String getClientOrderId();
 
-	String getPrice();
+    String getPrice();
 
-	String getOrigQty();
+    String getOrigQty();
 
-	String getExecutedQty();
+    String getExecutedQty();
 
-	OrderStatus getStatus();
+    OrderStatus getStatus();
 
-	OrderType getType();
+    OrderType getType();
 
-	OrderSide getSide();
+    OrderSide getSide();
 
-	Long getTime();
+    Long getTime();
 
-	String getCummulativeQuoteQty();
+    String getCummulativeQuoteQty();
 }

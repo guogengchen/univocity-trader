@@ -5,15 +5,16 @@ import com.univocity.trader.chart.dynamic.*;
 import java.awt.*;
 
 public interface Painter<C extends Controller> {
-	enum Z {
-		FRONT, BACK
-	}
+    enum Z {
+        FRONT,
+        BACK
+    }
 
-	Z getZ();
+    Z getZ();
 
-	void paintOn(Graphics2D g, int width);
+    void paintOn(Graphics2D g, int width);
 
-	C getController();
+    C getController();
 
-	Insets insets();
+    Insets insets();
 }

@@ -4,41 +4,41 @@ import java.util.*;
 
 public abstract class Parameters {
 
-	public static final Parameters NULL = new Parameters() {
-		@Override
-		public String printParameters() {
-			return "{}";
-		}
-	};
+    public static final Parameters NULL = new Parameters() {
+        @Override
+        public String printParameters() {
+            return "{}";
+        }
+    };
 
-	protected abstract String printParameters();
+    protected abstract String printParameters();
 
-	public final String toString() {
-		return printParameters();
-	}
+    public final String toString() {
+        return printParameters();
+    }
 
-	public Parameters fromString(String s) {
-		throw new UnsupportedOperationException();
-	}
+    public Parameters fromString(String s) {
+        throw new UnsupportedOperationException();
+    }
 
-	public <T extends Parameters> Collection<T> fromString(Collection<String> parameters) {
-		List<T> out = new ArrayList<>();
-		for (String p : parameters) {
-			out.add((T) this.fromString(p));
-		}
-		return out;
-	}
+    public <T extends Parameters> Collection<T> fromString(Collection<String> parameters) {
+        List<T> out = new ArrayList<>();
+        for (String p : parameters) {
+            out.add((T)this.fromString(p));
+        }
+        return out;
+    }
 
-	@Override
-	public final int hashCode() {
-		return toString().hashCode();
-	}
+    @Override
+    public final int hashCode() {
+        return toString().hashCode();
+    }
 
-	@Override
-	public final boolean equals(Object o) {
-		if (o == null) {
-			return false;
-		}
-		return toString().equals(o.toString());
-	}
+    @Override
+    public final boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        return toString().equals(o.toString());
+    }
 }

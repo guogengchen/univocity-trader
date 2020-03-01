@@ -8,34 +8,34 @@ import java.util.function.*;
 
 public class ChandelierExitShort extends SingleValueCalculationIndicator {
 
-	private LowestValueIndicator low;
-	private AverageTrueRange atr;
-	private double k;
+    private LowestValueIndicator low;
+    private AverageTrueRange atr;
+    private double k;
 
-	public ChandelierExitShort(TimeInterval interval) {
-		this(22, interval, 3.0);
-	}
+    public ChandelierExitShort(TimeInterval interval) {
+        this(22, interval, 3.0);
+    }
 
-	public ChandelierExitShort(int length, TimeInterval interval, double k) {
-		this(length, interval, k, c -> c.low);
-	}
+    public ChandelierExitShort(int length, TimeInterval interval, double k) {
+        this(length, interval, k, c -> c.low);
+    }
 
-	ChandelierExitShort(int length, TimeInterval interval, double k, ToDoubleFunction<Candle> valueGetter) {
-		super(interval, null);
-		this.low = new LowestValueIndicator(length, interval, valueGetter);
-		this.atr = new AverageTrueRange(length, interval);
-		this.k = k;
-	}
+    ChandelierExitShort(int length, TimeInterval interval, double k, ToDoubleFunction<Candle> valueGetter) {
+        super(interval, null);
+        this.low = new LowestValueIndicator(length, interval, valueGetter);
+        this.atr = new AverageTrueRange(length, interval);
+        this.k = k;
+    }
 
-	@Override
-	protected double calculate(Candle candle, double value, double previousValue, boolean updating) {
-		atr.accumulate(candle);
-		low.accumulate(candle);
-		return low.getValue() + (atr.getValue() * k);
-	}
+    @Override
+    protected double calculate(Candle candle, double value, double previousValue, boolean updating) {
+        atr.accumulate(candle);
+        low.accumulate(candle);
+        return low.getValue() + (atr.getValue() * k);
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{low, atr};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {low, atr};
+    }
 }

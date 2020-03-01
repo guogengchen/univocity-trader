@@ -11,37 +11,37 @@ import java.util.function.*;
  */
 public class DoubleExponentialMovingAverage extends ExponentialMovingAverage {
 
-	private ExponentialMovingAverage ema;
+    private ExponentialMovingAverage ema;
 
-	public DoubleExponentialMovingAverage(int length, TimeInterval interval) {
-		this(length, interval, c -> c.close);
-	}
+    public DoubleExponentialMovingAverage(int length, TimeInterval interval) {
+        this(length, interval, c -> c.close);
+    }
 
-	public DoubleExponentialMovingAverage(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
-		super(length, interval, valueGetter);
-		ema = new ExponentialMovingAverage(length, interval, valueGetter);
-	}
+    public DoubleExponentialMovingAverage(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
+        super(length, interval, valueGetter);
+        ema = new ExponentialMovingAverage(length, interval, valueGetter);
+    }
 
-	@Override
-	public void setAlpha(double alpha) {
-		super.setAlpha(alpha);
-		ema.setAlpha(alpha);
-	}
+    @Override
+    public void setAlpha(double alpha) {
+        super.setAlpha(alpha);
+        ema.setAlpha(alpha);
+    }
 
-	@Override
-	protected double extractValue(Candle candle, boolean updating) {
-		ema.accumulate(candle);
-		return ema.getValue();
-	}
+    @Override
+    protected double extractValue(Candle candle, boolean updating) {
+        ema.accumulate(candle);
+        return ema.getValue();
+    }
 
-	@Override
-	public double getValue() {
-		double emaEma = super.getValue();
-		return (2 * ema.getValue()) - emaEma;
-	}
+    @Override
+    public double getValue() {
+        double emaEma = super.getValue();
+        return (2 * ema.getValue()) - emaEma;
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{ema};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {ema};
+    }
 }

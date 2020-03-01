@@ -9,70 +9,70 @@ import java.util.function.*;
  */
 public abstract class ValueSelectionIndicator extends MultiValueIndicator {
 
-	private double updateValue = initialValue();
-	private double selectedValue = initialValue();
-	private int ticksLeft;
+    private double updateValue = initialValue();
+    private double selectedValue = initialValue();
+    private int ticksLeft;
 
-	public ValueSelectionIndicator(int length, TimeInterval interval) {
-		this(length, interval, c -> c.close);
-	}
+    public ValueSelectionIndicator(int length, TimeInterval interval) {
+        this(length, interval, c -> c.close);
+    }
 
-	public ValueSelectionIndicator(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
-		super(length, interval, valueGetter);
-	}
+    public ValueSelectionIndicator(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
+        super(length, interval, valueGetter);
+    }
 
-	private void recalculate() {
-		updateValue = selectedValue = initialValue();
-		final int len = values.size();
-		int tmp = len;
-		int start = values.i - 1;
-		while (--tmp >= 0) {
-			if (start < 0) {
-				start = len - 1;
-			}
-			double v = values.get(start--);
+    private void recalculate() {
+        updateValue = selectedValue = initialValue();
+        final int len = values.size();
+        int tmp = len;
+        int start = values.i - 1;
+        while (--tmp >= 0) {
+            if (start < 0) {
+                start = len - 1;
+            }
+            double v = values.get(start--);
 
-			double selected = select(v, selectedValue);
-			if (selected == v) {
-				selectedValue = v;
-				ticksLeft = tmp;
-			}
-		}
-	}
+            double selected = select(v, selectedValue);
+            if (selected == v) {
+                selectedValue = v;
+                ticksLeft = tmp;
+            }
+        }
+    }
 
-	@Override
-	protected boolean calculateIndicatorValue(Candle candle, double value, boolean updating) {
-		if (updating) {
-			if (ticksLeft <= 0) {
-				recalculate();
-			}
-			double selected = select(value, selectedValue);
-			updateValue = selected == value ? selected : initialValue();
-		} else {
-			updateValue = initialValue();
+    @Override
+    protected boolean calculateIndicatorValue(Candle candle, double value, boolean updating) {
+        if (updating) {
+            if (ticksLeft <= 0) {
+                recalculate();
+            }
+            double selected = select(value, selectedValue);
+            updateValue = selected == value ? selected : initialValue();
+        } else {
+            updateValue = initialValue();
 
-			ticksLeft--;
-			if (ticksLeft <= 0) {
-				recalculate();
-			} else {
-				double selected = select(value, selectedValue);
-				if (selected == value) {
-					selectedValue = value;
-					ticksLeft = values.size() - 1;
-				}
-			}
-		}
+            ticksLeft--;
+            if (ticksLeft <= 0) {
+                recalculate();
+            } else {
+                double selected = select(value, selectedValue);
+                if (selected == value) {
+                    selectedValue = value;
+                    ticksLeft = values.size() - 1;
+                }
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	protected abstract double select(double v1, double v2);
+    protected abstract double select(double v1, double v2);
 
-	protected abstract double initialValue();
+    protected abstract double initialValue();
 
-	@Override
-	public double getValue() {
-		return select(selectedValue, updateValue);
-	}
+    @Override
+    public double getValue() {
+        return select(selectedValue, updateValue);
+    }
 
 }

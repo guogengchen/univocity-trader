@@ -6,5 +6,5 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Inherited
 public @interface UIBoundClass {
-	Class<? extends UpdateProcessor> updateProcessor();
+    Class<? extends UpdateProcessor> updateProcessor();
 }

@@ -14,31 +14,31 @@ import java.util.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WithdrawHistory {
 
-	private List<Withdraw> withdrawList;
+    private List<Withdraw> withdrawList;
 
-	private boolean success;
+    private boolean success;
 
-	public List<Withdraw> getWithdrawList() {
-		return withdrawList;
-	}
+    public List<Withdraw> getWithdrawList() {
+        return withdrawList;
+    }
 
-	public void setWithdrawList(List<Withdraw> withdrawList) {
-		this.withdrawList = withdrawList;
-	}
+    public void setWithdrawList(List<Withdraw> withdrawList) {
+        this.withdrawList = withdrawList;
+    }
 
-	public boolean isSuccess() {
-		return success;
-	}
+    public boolean isSuccess() {
+        return success;
+    }
 
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-				.append("withdrawList", withdrawList)
-				.append("success", success)
-				.toString();
-	}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
+            .append("withdrawList", withdrawList)
+            .append("success", success)
+            .toString();
+    }
 }

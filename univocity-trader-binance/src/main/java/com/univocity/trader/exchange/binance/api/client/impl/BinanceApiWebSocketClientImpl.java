@@ -26,26 +26,27 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
     @Override
     public WebSocket onDepthEvent(String symbols, BinanceApiCallback<DepthEvent> callback) {
         final String channel = Arrays.stream(symbols.split(","))
-                .map(String::trim)
-                .map(s -> String.format("%s@depth", s))
-                .collect(Collectors.joining("/"));
+            .map(String::trim)
+            .map(s -> String.format("%s@depth", s))
+            .collect(Collectors.joining("/"));
         return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, DepthEvent.class));
     }
 
     @Override
-    public WebSocket onCandlestickEvent(String symbols, CandlestickInterval interval, BinanceApiCallback<CandlestickEvent> callback) {
+    public WebSocket onCandlestickEvent(String symbols, CandlestickInterval interval,
+        BinanceApiCallback<CandlestickEvent> callback) {
         final String channel = Arrays.stream(symbols.split(","))
-                .map(String::trim)
-                .map(s -> String.format("%s@kline_%s", s, interval.getIntervalId()))
-                .collect(Collectors.joining("/"));
+            .map(String::trim)
+            .map(s -> String.format("%s@kline_%s", s, interval.getIntervalId()))
+            .collect(Collectors.joining("/"));
         return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, CandlestickEvent.class));
     }
 
     public WebSocket onAggTradeEvent(String symbols, BinanceApiCallback<AggTradeEvent> callback) {
         final String channel = Arrays.stream(symbols.split(","))
-                .map(String::trim)
-                .map(s -> String.format("%s@aggTrade", s))
-                .collect(Collectors.joining("/"));
+            .map(String::trim)
+            .map(s -> String.format("%s@aggTrade", s))
+            .collect(Collectors.joining("/"));
         return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, AggTradeEvent.class));
     }
 
@@ -55,19 +56,22 @@ public class BinanceApiWebSocketClientImpl implements BinanceApiWebSocketClient,
 
     public WebSocket onAllMarketTickersEvent(BinanceApiCallback<List<AllMarketTickersEvent>> callback) {
         final String channel = "!ticker@arr";
-        return createNewWebSocket(channel, new BinanceApiWebSocketListener<>(callback, new TypeReference<List<AllMarketTickersEvent>>() {}));
+        return createNewWebSocket(channel,
+            new BinanceApiWebSocketListener<>(callback, new TypeReference<List<AllMarketTickersEvent>>() {}));
     }
 
     /**
-     * @deprecated This method is no longer functional. Please use the returned {@link Closeable} from any of the other methods to close the web socket.
+     * @deprecated This method is no longer functional. Please use the returned {@link Closeable} from any of the other
+     *             methods to close the web socket.
      */
     @Override
-    public void close() { }
+    public void close() {}
 
     private WebSocket createNewWebSocket(String channel, BinanceApiWebSocketListener<?> listener) {
         String streamingUrl = String.format("%s/%s", BinanceApiConstants.WS_API_BASE_URL, channel);
         try {
-            return client.prepareGet(streamingUrl).execute(new WebSocketUpgradeHandler.Builder().addWebSocketListener(listener).build()).get();
+            return client.prepareGet(streamingUrl)
+                .execute(new WebSocketUpgradeHandler.Builder().addWebSocketListener(listener).build()).get();
         } catch (Exception any) {
             log.error(String.format("Error while creating new websocket connection to %s", streamingUrl), any);
         }

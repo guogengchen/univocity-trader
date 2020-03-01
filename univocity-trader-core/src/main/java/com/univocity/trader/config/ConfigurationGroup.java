@@ -7,7 +7,7 @@ import java.util.function.*;
  */
 public interface ConfigurationGroup {
 
-	void readProperties(PropertyBasedConfiguration properties);
+    void readProperties(PropertyBasedConfiguration properties);
 
-	boolean isConfigured();
+    boolean isConfigured();
 }

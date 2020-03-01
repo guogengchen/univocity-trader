@@ -11,24 +11,22 @@ import java.util.function.*;
  */
 public class HighestValueIndicator extends ValueSelectionIndicator {
 
-	public HighestValueIndicator(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
-		super(length, interval, valueGetter);
-	}
+    public HighestValueIndicator(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
+        super(length, interval, valueGetter);
+    }
 
-	@Override
-	protected double select(double v1, double v2) {
-		return Math.max(v1, v2);
-	}
+    @Override
+    protected double select(double v1, double v2) {
+        return Math.max(v1, v2);
+    }
 
-	@Override
-	protected double initialValue() {
-		return -9999999999999999999.9;
-	}
+    @Override
+    protected double initialValue() {
+        return -9999999999999999999.9;
+    }
 
-
-
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }

@@ -6,5 +6,5 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Inherited
 public @interface CheckBoxBound {
-	String value();
+    String value();
 }

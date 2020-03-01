@@ -16,192 +16,192 @@ import java.util.stream.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NewOrderResponse implements OrderDetails {
 
-	/**
-	 * Order symbol.
-	 */
-	private String symbol;
+    /**
+     * Order symbol.
+     */
+    private String symbol;
 
-	/**
-	 * Order id.
-	 */
-	private Long orderId;
+    /**
+     * Order id.
+     */
+    private Long orderId;
 
-	/**
-	 * This will be either a generated one, or the newClientOrderId parameter
-	 * which was passed when creating the new order.
-	 */
-	private String clientOrderId;
+    /**
+     * This will be either a generated one, or the newClientOrderId parameter
+     * which was passed when creating the new order.
+     */
+    private String clientOrderId;
 
-	private String price;
+    private String price;
 
-	private String origQty;
+    private String origQty;
 
-	private String executedQty;
+    private String executedQty;
 
-	private String cummulativeQuoteQty;
+    private String cummulativeQuoteQty;
 
-	private OrderStatus status;
+    private OrderStatus status;
 
-	private TimeInForce timeInForce;
+    private TimeInForce timeInForce;
 
-	private OrderType type;
+    private OrderType type;
 
-	private OrderSide side;
+    private OrderSide side;
 
-	// @JsonSetter(nulls = Nulls.AS_EMPTY)
-	private List<Trade> fills;
+    // @JsonSetter(nulls = Nulls.AS_EMPTY)
+    private List<Trade> fills;
 
-	@JsonIgnore
-	private double unitPrice;
+    @JsonIgnore
+    private double unitPrice;
 
-	/**
-	 * Transact time for this order.
-	 */
-	private Long transactTime;
+    /**
+     * Transact time for this order.
+     */
+    private Long transactTime;
 
-	public String getSymbol() {
-		return symbol;
-	}
+    public String getSymbol() {
+        return symbol;
+    }
 
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
-	}
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
 
-	public Long getOrderId() {
-		return orderId;
-	}
+    public Long getOrderId() {
+        return orderId;
+    }
 
-	public void setOrderId(Long orderId) {
-		this.orderId = orderId;
-	}
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
 
-	public String getClientOrderId() {
-		return clientOrderId;
-	}
+    public String getClientOrderId() {
+        return clientOrderId;
+    }
 
-	public void setClientOrderId(String clientOrderId) {
-		this.clientOrderId = clientOrderId;
-	}
+    public void setClientOrderId(String clientOrderId) {
+        this.clientOrderId = clientOrderId;
+    }
 
-	public Long getTransactTime() {
-		return transactTime;
-	}
+    public Long getTransactTime() {
+        return transactTime;
+    }
 
-	public void setTransactTime(Long transactTime) {
-		this.transactTime = transactTime;
-	}
+    public void setTransactTime(Long transactTime) {
+        this.transactTime = transactTime;
+    }
 
-	public String getPrice() {
-		return price;
-	}
+    public String getPrice() {
+        return price;
+    }
 
-	public double getPriceAmount() {
-		return Double.parseDouble(price);
-	}
+    public double getPriceAmount() {
+        return Double.parseDouble(price);
+    }
 
-	public void setPrice(String price) {
-		this.price = price;
-	}
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
-	public String getOrigQty() {
-		return origQty;
-	}
+    public String getOrigQty() {
+        return origQty;
+    }
 
-	public double getOrigQtyAmount() {
-		return Double.parseDouble(origQty);
-	}
+    public double getOrigQtyAmount() {
+        return Double.parseDouble(origQty);
+    }
 
-	public void setOrigQty(String origQty) {
-		this.origQty = origQty;
-	}
+    public void setOrigQty(String origQty) {
+        this.origQty = origQty;
+    }
 
-	public String getExecutedQty() {
-		return executedQty;
-	}
+    public String getExecutedQty() {
+        return executedQty;
+    }
 
-	public void setExecutedQty(String executedQty) {
-		this.executedQty = executedQty;
-	}
+    public void setExecutedQty(String executedQty) {
+        this.executedQty = executedQty;
+    }
 
-	public String getCummulativeQuoteQty() {
-		return cummulativeQuoteQty;
-	}
+    public String getCummulativeQuoteQty() {
+        return cummulativeQuoteQty;
+    }
 
-	public void setCummulativeQuoteQty(String cummulativeQuoteQty) {
-		this.cummulativeQuoteQty = cummulativeQuoteQty;
-	}
+    public void setCummulativeQuoteQty(String cummulativeQuoteQty) {
+        this.cummulativeQuoteQty = cummulativeQuoteQty;
+    }
 
-	public OrderStatus getStatus() {
-		return status;
-	}
+    public OrderStatus getStatus() {
+        return status;
+    }
 
-	public void setStatus(OrderStatus status) {
-		this.status = status;
-	}
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
 
-	public TimeInForce getTimeInForce() {
-		return timeInForce;
-	}
+    public TimeInForce getTimeInForce() {
+        return timeInForce;
+    }
 
-	public void setTimeInForce(TimeInForce timeInForce) {
-		this.timeInForce = timeInForce;
-	}
+    public void setTimeInForce(TimeInForce timeInForce) {
+        this.timeInForce = timeInForce;
+    }
 
-	public OrderType getType() {
-		return type;
-	}
+    public OrderType getType() {
+        return type;
+    }
 
-	public void setType(OrderType type) {
-		this.type = type;
-	}
+    public void setType(OrderType type) {
+        this.type = type;
+    }
 
-	public OrderSide getSide() {
-		return side;
-	}
+    public OrderSide getSide() {
+        return side;
+    }
 
-	public void setSide(OrderSide side) {
-		this.side = side;
-	}
+    public void setSide(OrderSide side) {
+        this.side = side;
+    }
 
-	public List<Trade> getFills() {
-		return fills;
-	}
+    public List<Trade> getFills() {
+        return fills;
+    }
 
-	public void setFills(List<Trade> fills) {
-		this.fills = fills;
-	}
+    public void setFills(List<Trade> fills) {
+        this.fills = fills;
+    }
 
-	@Override
-	public Long getTime() {
-		return transactTime;
-	}
+    @Override
+    public Long getTime() {
+        return transactTime;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-				.append("symbol", symbol)
-				.append("orderId", orderId)
-				.append("clientOrderId", clientOrderId)
-				.append("transactTime", transactTime)
-				.append("price", price)
-				.append("origQty", origQty)
-				.append("executedQty", executedQty)
-				.append("status", status)
-				.append("timeInForce", timeInForce)
-				.append("type", type)
-				.append("side", side)
-				.append("fills", Optional.ofNullable(fills).orElse(Collections.emptyList())
-						.stream()
-						.map(Object::toString)
-						.collect(Collectors.joining(", ")))
-				.toString();
-	}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
+            .append("symbol", symbol)
+            .append("orderId", orderId)
+            .append("clientOrderId", clientOrderId)
+            .append("transactTime", transactTime)
+            .append("price", price)
+            .append("origQty", origQty)
+            .append("executedQty", executedQty)
+            .append("status", status)
+            .append("timeInForce", timeInForce)
+            .append("type", type)
+            .append("side", side)
+            .append("fills", Optional.ofNullable(fills).orElse(Collections.emptyList())
+                .stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", ")))
+            .toString();
+    }
 
-	public double getUnitPrice() {
-		return unitPrice;
-	}
+    public double getUnitPrice() {
+        return unitPrice;
+    }
 
-	public void setUnitPrice(double unitPrice) {
-		this.unitPrice = unitPrice;
-	}
+    public void setUnitPrice(double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
 }

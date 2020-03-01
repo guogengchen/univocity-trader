@@ -6,83 +6,81 @@ import com.univocity.trader.strategy.*;
 
 public class RSI extends SingleValueIndicator {
 
-	private final ModifiedMovingAverage averageGainIndicator;
-	private final ModifiedMovingAverage averageLossIndicator;
+    private final ModifiedMovingAverage averageGainIndicator;
+    private final ModifiedMovingAverage averageLossIndicator;
 
-	private Candle prev;
+    private Candle prev;
 
-	private double value;
+    private double value;
 
-	public RSI(TimeInterval interval) {
-		this(14, interval);
-	}
+    public RSI(TimeInterval interval) {
+        this(14, interval);
+    }
 
-	public RSI(int length, TimeInterval interval) {
-		super(interval, null);
-		this.averageGainIndicator = new ModifiedMovingAverage(length, interval, this::calculateGain);
-		this.averageLossIndicator = new ModifiedMovingAverage(length, interval, this::calculateLoss);
-	}
+    public RSI(int length, TimeInterval interval) {
+        super(interval, null);
+        this.averageGainIndicator = new ModifiedMovingAverage(length, interval, this::calculateGain);
+        this.averageLossIndicator = new ModifiedMovingAverage(length, interval, this::calculateLoss);
+    }
 
+    private double calculateGain(Candle c) {
+        double current = c.close;
+        double previous = prev.close;
 
-	private double calculateGain(Candle c) {
-		double current = c.close;
-		double previous = prev.close;
+        if (current > previous) {
+            return current - previous;
+        }
+        return 0.0;
+    }
 
-		if (current > previous) {
-			return current - previous;
-		}
-		return 0.0;
-	}
+    private double calculateLoss(Candle c) {
+        double current = c.close;
+        double previous = prev.close;
 
-	private double calculateLoss(Candle c) {
-		double current = c.close;
-		double previous = prev.close;
+        if (current < previous) {
+            return previous - current;
+        }
+        return 0.0;
+    }
 
-		if (current < previous) {
-			return previous - current;
-		}
-		return 0.0;
-	}
+    @Override
+    protected boolean process(Candle candle, double v, boolean updating) {
+        if (prev == null) {
+            prev = candle;
+            averageGainIndicator.accumulate(0.0);
+            averageLossIndicator.accumulate(0.0);
+            return false;
+        }
 
+        averageGainIndicator.accumulate(candle);
+        averageLossIndicator.accumulate(candle);
 
-	@Override
-	protected boolean process(Candle candle, double v, boolean updating) {
-		if (prev == null) {
-			prev = candle;
-			averageGainIndicator.accumulate(0.0);
-			averageLossIndicator.accumulate(0.0);
-			return false;
-		}
+        double averageGain = averageGainIndicator.getValue();
+        double averageLoss = averageLossIndicator.getValue();
+        if (averageLoss == 0.0) {
+            if (averageGain == 0.0) {
+                this.value = 0.0;
+            } else {
+                this.value = 100.0;
+            }
+        } else {
+            double relativeStrength = averageGain / averageLoss;
+            this.value = 100.0 - (100.0 / (1.0 + relativeStrength));
+        }
 
-		averageGainIndicator.accumulate(candle);
-		averageLossIndicator.accumulate(candle);
+        if (!updating) {
+            prev = candle;
+        }
+        return true;
+    }
 
-		double averageGain = averageGainIndicator.getValue();
-		double averageLoss = averageLossIndicator.getValue();
-		if (averageLoss == 0.0) {
-			if (averageGain == 0.0) {
-				this.value = 0.0;
-			} else {
-				this.value = 100.0;
-			}
-		} else {
-			double relativeStrength = averageGain / averageLoss;
-			this.value = 100.0 - (100.0 / (1.0 + relativeStrength));
-		}
+    @Override
+    public double getValue() {
+        return value;
+    }
 
-		if(!updating) {
-			prev = candle;
-		}
-		return true;
-	}
-
-	@Override
-	public double getValue() {
-		return value;
-	}
-
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{averageLossIndicator, averageGainIndicator};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {averageLossIndicator, averageGainIndicator};
+    }
 }

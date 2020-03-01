@@ -9,57 +9,56 @@ import com.univocity.trader.strategy.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
 public class ADX extends SingleValueIndicator {
-	private final PlusDIIndicator plusDIIndicator;
-	private final MinusDIIndicator minusDIIndicator;
-	private final ModifiedMovingAverage adx;
+    private final PlusDIIndicator plusDIIndicator;
+    private final MinusDIIndicator minusDIIndicator;
+    private final ModifiedMovingAverage adx;
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{plusDIIndicator, minusDIIndicator, adx};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {plusDIIndicator, minusDIIndicator, adx};
+    }
 
-	public ADX(TimeInterval interval) {
-		this(14, interval);
-	}
+    public ADX(TimeInterval interval) {
+        this(14, interval);
+    }
 
-	public ADX(int length, TimeInterval interval) {
-		this(length, length, interval);
-	}
+    public ADX(int length, TimeInterval interval) {
+        this(length, length, interval);
+    }
 
-	public ADX(int diLength, int adxLength, TimeInterval interval) {
-		super(interval, null);
-		adx = new ModifiedMovingAverage(adxLength, interval, null);
-		plusDIIndicator = new PlusDIIndicator(diLength, interval);
-		minusDIIndicator = new MinusDIIndicator(diLength, interval);
-	}
+    public ADX(int diLength, int adxLength, TimeInterval interval) {
+        super(interval, null);
+        adx = new ModifiedMovingAverage(adxLength, interval, null);
+        plusDIIndicator = new PlusDIIndicator(diLength, interval);
+        minusDIIndicator = new MinusDIIndicator(diLength, interval);
+    }
 
-	@Override
-	protected boolean process(Candle candle, double value, boolean updating) {
-		plusDIIndicator.accumulate(candle);
-		minusDIIndicator.accumulate(candle);
+    @Override
+    protected boolean process(Candle candle, double value, boolean updating) {
+        plusDIIndicator.accumulate(candle);
+        minusDIIndicator.accumulate(candle);
 
-		double pdi = plusDIIndicator.getValue();
-		double mdi = minusDIIndicator.getValue();
+        double pdi = plusDIIndicator.getValue();
+        double mdi = minusDIIndicator.getValue();
 
+        if (pdi + mdi == 0.0) {
+            value = 0.0;
+        } else {
+            value = (Math.abs(pdi - mdi) / (pdi + mdi)) * 100;
+        }
 
-		if (pdi + mdi == 0.0) {
-			value = 0.0;
-		} else {
-			value = (Math.abs(pdi - mdi) / (pdi + mdi)) * 100;
-		}
+        if (updating) {
+            adx.update(value);
+        } else {
+            adx.accumulate(value);
+        }
 
-		if (updating) {
-			adx.update(value);
-		} else {
-			adx.accumulate(value);
-		}
+        return true;
+    }
 
-		return true;
-	}
-
-	@Override
-	public double getValue() {
-		return adx.getValue();
-	}
+    @Override
+    public double getValue() {
+        return adx.getValue();
+    }
 
 }

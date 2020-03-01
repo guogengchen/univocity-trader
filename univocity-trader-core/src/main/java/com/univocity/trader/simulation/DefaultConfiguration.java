@@ -10,17 +10,15 @@ import java.util.*;
 
 public abstract class DefaultConfiguration {
 
-	private AccountManager account;
+    private AccountManager account;
 
-	protected abstract AccountManager createAccount();
+    protected abstract AccountManager createAccount();
 
-	protected AccountManager getAccount() {
-		if (account == null) {
+    protected AccountManager getAccount() {
+        if (account == null) {
 
-		}
-		return account;
-	}
-
+        }
+        return account;
+    }
 
 }
-

@@ -5,12 +5,12 @@ import com.univocity.trader.strategy.*;
 
 public class RateOfChange extends AbstractRateOfChange {
 
-	public RateOfChange(int length, TimeInterval interval) {
-		super(length, interval, c -> c.close);
-	}
+    public RateOfChange(int length, TimeInterval interval) {
+        super(length, interval, c -> c.close);
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }

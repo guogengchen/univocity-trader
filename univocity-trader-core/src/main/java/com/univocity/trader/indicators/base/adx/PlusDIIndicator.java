@@ -7,12 +7,12 @@ import com.univocity.trader.indicators.base.*;
  */
 public class PlusDIIndicator extends AbstractDIIndicator {
 
-	public PlusDIIndicator(int length, TimeInterval interval) {
-		super(length, interval);
-	}
+    public PlusDIIndicator(int length, TimeInterval interval) {
+        super(length, interval);
+    }
 
-	@Override
-	protected AbstractDMIndicator getDMIndicator(TimeInterval interval) {
-		return new PlusDMIndicator(interval);
-	}
+    @Override
+    protected AbstractDMIndicator getDMIndicator(TimeInterval interval) {
+        return new PlusDMIndicator(interval);
+    }
 }

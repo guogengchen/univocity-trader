@@ -12,142 +12,144 @@ import static com.univocity.trader.indicators.base.TimeInterval.*;
 
 public abstract class AbstractSimulator<C extends Configuration<C, A>, A extends AccountConfiguration<A>> {
 
-	protected Map<String, SymbolInformation> symbolInformation = new TreeMap<>();
-	private AccountManager[] accounts;
-	protected final Simulation simulation;
-	protected final C configuration;
-	private Map<String, String[]> allPairs;
+    protected Map<String, SymbolInformation> symbolInformation = new TreeMap<>();
+    private AccountManager[] accounts;
+    protected final Simulation simulation;
+    protected final C configuration;
+    private Map<String, String[]> allPairs;
 
-	public AbstractSimulator(C configuration) {
-		this.configuration = configuration;
-		simulation = configuration.simulation();
-	}
+    public AbstractSimulator(C configuration) {
+        this.configuration = configuration;
+        simulation = configuration.simulation();
+    }
 
-	protected AccountManager[] accounts() {
-		if (accounts == null) {
-			List<A> accountConfigs = configuration.accounts();
-			if (accountConfigs.isEmpty()) {
-				throw new IllegalStateException("No account configuration defined");
-			}
-			this.accounts = new AccountManager[accountConfigs.size()];
-			int i = 0;
-			for (A accountConfig : accountConfigs) {
-				this.accounts[i++] = createAccountInstance(accountConfig).getAccount();
-			}
-		}
-		return accounts;
-	}
+    protected AccountManager[] accounts() {
+        if (accounts == null) {
+            List<A> accountConfigs = configuration.accounts();
+            if (accountConfigs.isEmpty()) {
+                throw new IllegalStateException("No account configuration defined");
+            }
+            this.accounts = new AccountManager[accountConfigs.size()];
+            int i = 0;
+            for (A accountConfig : accountConfigs) {
+                this.accounts[i++] = createAccountInstance(accountConfig).getAccount();
+            }
+        }
+        return accounts;
+    }
 
-	private SimulatedClientAccount createAccountInstance(A accountConfiguration) {
-		return new SimulatedClientAccount(accountConfiguration, configuration.simulation());
-	}
+    private SimulatedClientAccount createAccountInstance(A accountConfiguration) {
+        return new SimulatedClientAccount(accountConfiguration, configuration.simulation());
+    }
 
-	public final SymbolInformation symbolInformation(String symbol) {
-		SymbolInformation info = new SymbolInformation(symbol);
-		var allPairs = populateAllPairs();
-		var allReferenceCurrencies = populateAllReferenceCurrencies();
-		if (!allPairs.containsKey(symbol) && !allReferenceCurrencies.contains(symbol)) {
-			throw new IllegalArgumentException("Unknown symbol '" + symbol + "'. Available symbols are: " + allPairs.keySet() + " and reference currencies: " + allReferenceCurrencies);
-		}
+    public final SymbolInformation symbolInformation(String symbol) {
+        SymbolInformation info = new SymbolInformation(symbol);
+        var allPairs = populateAllPairs();
+        var allReferenceCurrencies = populateAllReferenceCurrencies();
+        if (!allPairs.containsKey(symbol) && !allReferenceCurrencies.contains(symbol)) {
+            throw new IllegalArgumentException("Unknown symbol '" + symbol + "'. Available symbols are: "
+                + allPairs.keySet() + " and reference currencies: " + allReferenceCurrencies);
+        }
 
-		symbolInformation.put(symbol, info);
-		return info;
-	}
+        symbolInformation.put(symbol, info);
+        return info;
+    }
 
-	public final LocalDateTime getSimulationStart() {
-		LocalDateTime start = simulation.simulateFrom();
-		return start != null ? start : LocalDateTime.now().minusYears(1);
-	}
+    public final LocalDateTime getSimulationStart() {
+        LocalDateTime start = simulation.simulateFrom();
+        return start != null ? start : LocalDateTime.now().minusYears(1);
+    }
 
-	public final LocalDateTime getSimulationEnd() {
-		LocalDateTime end = simulation.simulateTo();
-		return end != null ? end : LocalDateTime.now();
-	}
+    public final LocalDateTime getSimulationEnd() {
+        LocalDateTime end = simulation.simulateTo();
+        return end != null ? end : LocalDateTime.now();
+    }
 
-	protected final long getStartTime() {
-		return getSimulationStart().toInstant(ZoneOffset.UTC).toEpochMilli() - MINUTE.ms;
-	}
+    protected final long getStartTime() {
+        return getSimulationStart().toInstant(ZoneOffset.UTC).toEpochMilli() - MINUTE.ms;
+    }
 
-	protected final long getEndTime() {
-		return getSimulationEnd().toInstant(ZoneOffset.UTC).toEpochMilli();
-	}
+    protected final long getEndTime() {
+        return getSimulationEnd().toInstant(ZoneOffset.UTC).toEpochMilli();
+    }
 
-	protected void resetBalances() {
-		for (AccountManager account : accounts()) {
-			account.resetBalances();
-			double[] total = new double[]{0};
-			simulation.initialAmounts().forEach((symbol, amount) -> {
-				if (symbol.equals("")) {
-					symbol = account.configuration().referenceCurrency();
-				}
-				account.setAmount(symbol, amount);
-				total[0] += amount;
-			});
+    protected void resetBalances() {
+        for (AccountManager account : accounts()) {
+            account.resetBalances();
+            double[] total = new double[] {0};
+            simulation.initialAmounts().forEach((symbol, amount) -> {
+                if (symbol.equals("")) {
+                    symbol = account.configuration().referenceCurrency();
+                }
+                account.setAmount(symbol, amount);
+                total[0] += amount;
+            });
 
-			if (total[0] == 0.0) {
-				throw new IllegalStateException("Cannot execute simulation without initial funds to trade with");
-			}
-		}
-	}
+            if (total[0] == 0.0) {
+                throw new IllegalStateException("Cannot execute simulation without initial funds to trade with");
+            }
+        }
+    }
 
-//	public A account() {
-//		return configuration.account();
-//	}
-//
-//	public A account(String accountId) {
-//		return configuration.account(accountId);
-//	}
+    // public A account() {
+    // return configuration.account();
+    // }
+    //
+    // public A account(String accountId) {
+    // return configuration.account(accountId);
+    // }
 
-	public Map<String, String[]> allPairs() {
-		return populateAllPairs();
-	}
+    public Map<String, String[]> allPairs() {
+        return populateAllPairs();
+    }
 
-	protected Map<String, String[]> getAllPairs() {
-		if (allPairs == null) {
-			allPairs = populateAllPairs();
-		}
-		return allPairs;
-	}
+    protected Map<String, String[]> getAllPairs() {
+        if (allPairs == null) {
+            allPairs = populateAllPairs();
+        }
+        return allPairs;
+    }
 
-	private Map<String, String[]> populateAllPairs() {
-		TreeMap<String, String[]> out = new TreeMap<>();
-		for (AccountManager account : accounts()) {
-			out.putAll(account.configuration().symbolPairs());
-		}
-		return out;
-	}
+    private Map<String, String[]> populateAllPairs() {
+        TreeMap<String, String[]> out = new TreeMap<>();
+        for (AccountManager account : accounts()) {
+            out.putAll(account.configuration().symbolPairs());
+        }
+        return out;
+    }
 
-	private Set<String> populateAllReferenceCurrencies() {
-		TreeSet<String> out = new TreeSet<>();
-		for (AccountManager account : accounts()) {
-			out.add(account.getReferenceCurrencySymbol());
-		}
-		return out;
-	}
+    private Set<String> populateAllReferenceCurrencies() {
+        TreeSet<String> out = new TreeSet<>();
+        for (AccountManager account : accounts()) {
+            out.add(account.getReferenceCurrencySymbol());
+        }
+        return out;
+    }
 
-	protected Collection<String[]> getTradePairs() {
-		return getAllPairs().values();
-	}
+    protected Collection<String[]> getTradePairs() {
+        return getAllPairs().values();
+    }
 
-	public C configure() {
-		return configuration;
-	}
+    public C configure() {
+        return configuration;
+    }
 
-	public final void run() {
-		List<Parameters> parameters = simulation.parameters();
-		if (parameters.isEmpty()) {
-			parameters = Collections.singletonList(Parameters.NULL);
-		} else {
-			System.out.println("Running simulation with " + parameters.size() + " parameters");
-		}
+    public final void run() {
+        List<Parameters> parameters = simulation.parameters();
+        if (parameters.isEmpty()) {
+            parameters = Collections.singletonList(Parameters.NULL);
+        } else {
+            System.out.println("Running simulation with " + parameters.size() + " parameters");
+        }
 
-		long start = System.currentTimeMillis();
-		try {
-			executeSimulation(parameters);
-		} finally {
-			System.out.println("Total simulation time: " + TimeInterval.getFormattedDuration(System.currentTimeMillis() - start));
-		}
-	}
+        long start = System.currentTimeMillis();
+        try {
+            executeSimulation(parameters);
+        } finally {
+            System.out.println(
+                "Total simulation time: " + TimeInterval.getFormattedDuration(System.currentTimeMillis() - start));
+        }
+    }
 
-	protected abstract void executeSimulation(Collection<Parameters> parameters);
+    protected abstract void executeSimulation(Collection<Parameters> parameters);
 }

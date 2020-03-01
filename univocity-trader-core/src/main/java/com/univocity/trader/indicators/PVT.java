@@ -8,36 +8,34 @@ import java.util.function.*;
 
 public class PVT extends SingleValueCalculationIndicator {
 
-	private double previousValue;
+    private double previousValue;
 
-	public PVT(TimeInterval interval) {
-		super(interval, c -> c.close);
-	}
+    public PVT(TimeInterval interval) {
+        super(interval, c -> c.close);
+    }
 
-	public PVT(TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
-		super(interval, valueGetter);
-	}
+    public PVT(TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
+        super(interval, valueGetter);
+    }
 
-	@Override
-	protected double calculate(Candle candle, double value, double previousPvt, boolean updating) {
-		if (getAccumulationCount() == 0) {
-			previousValue = value;
-			return 0.0;
-		}
+    @Override
+    protected double calculate(Candle candle, double value, double previousPvt, boolean updating) {
+        if (getAccumulationCount() == 0) {
+            previousValue = value;
+            return 0.0;
+        }
 
-		double out = (((value - previousValue) / previousValue) * candle.volume) + previousPvt;
+        double out = (((value - previousValue) / previousValue) * candle.volume) + previousPvt;
 
-		if (!updating) {
-			previousValue = value;
-		}
+        if (!updating) {
+            previousValue = value;
+        }
 
-		return out;
-	}
+        return out;
+    }
 
-
-
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }

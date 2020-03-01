@@ -15,85 +15,85 @@ import org.apache.commons.lang3.builder.*;
 @JsonDeserialize(using = UserDataUpdateEventDeserializer.class)
 public class UserDataUpdateEvent {
 
-	private UserDataUpdateEventType eventType;
+    private UserDataUpdateEventType eventType;
 
-	private long eventTime;
+    private long eventTime;
 
-	private AccountUpdateEvent accountUpdateEvent;
+    private AccountUpdateEvent accountUpdateEvent;
 
-	private OrderTradeUpdateEvent orderTradeUpdateEvent;
+    private OrderTradeUpdateEvent orderTradeUpdateEvent;
 
-	public UserDataUpdateEventType getEventType() {
-		return eventType;
-	}
+    public UserDataUpdateEventType getEventType() {
+        return eventType;
+    }
 
-	public void setEventType(UserDataUpdateEventType eventType) {
-		this.eventType = eventType;
-	}
+    public void setEventType(UserDataUpdateEventType eventType) {
+        this.eventType = eventType;
+    }
 
-	public long getEventTime() {
-		return eventTime;
-	}
+    public long getEventTime() {
+        return eventTime;
+    }
 
-	public void setEventTime(long eventTime) {
-		this.eventTime = eventTime;
-	}
+    public void setEventTime(long eventTime) {
+        this.eventTime = eventTime;
+    }
 
-	public AccountUpdateEvent getAccountUpdateEvent() {
-		return accountUpdateEvent;
-	}
+    public AccountUpdateEvent getAccountUpdateEvent() {
+        return accountUpdateEvent;
+    }
 
-	public void setAccountUpdateEvent(AccountUpdateEvent accountUpdateEvent) {
-		this.accountUpdateEvent = accountUpdateEvent;
-	}
+    public void setAccountUpdateEvent(AccountUpdateEvent accountUpdateEvent) {
+        this.accountUpdateEvent = accountUpdateEvent;
+    }
 
-	public OrderTradeUpdateEvent getOrderTradeUpdateEvent() {
-		return orderTradeUpdateEvent;
-	}
+    public OrderTradeUpdateEvent getOrderTradeUpdateEvent() {
+        return orderTradeUpdateEvent;
+    }
 
-	public void setOrderTradeUpdateEvent(OrderTradeUpdateEvent orderTradeUpdateEvent) {
-		this.orderTradeUpdateEvent = orderTradeUpdateEvent;
-	}
+    public void setOrderTradeUpdateEvent(OrderTradeUpdateEvent orderTradeUpdateEvent) {
+        this.orderTradeUpdateEvent = orderTradeUpdateEvent;
+    }
 
-	@Override
-	public String toString() {
-		ToStringBuilder sb = new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
-				.append("eventType", eventType)
-				.append("eventTime", eventTime);
-		if (eventType == UserDataUpdateEventType.ACCOUNT_UPDATE) {
-			sb.append("accountUpdateEvent", accountUpdateEvent);
-		} else if (eventType == UserDataUpdateEventType.ACCOUNT_POSITION_UPDATE) {
-			sb.append("accountPositionUpdateEvent", accountUpdateEvent);
-		} else {
-			sb.append("orderTradeUpdateEvent", orderTradeUpdateEvent);
-		}
-		return sb.toString();
-	}
+    @Override
+    public String toString() {
+        ToStringBuilder sb = new ToStringBuilder(this, BinanceApiConstants.TO_STRING_BUILDER_STYLE)
+            .append("eventType", eventType)
+            .append("eventTime", eventTime);
+        if (eventType == UserDataUpdateEventType.ACCOUNT_UPDATE) {
+            sb.append("accountUpdateEvent", accountUpdateEvent);
+        } else if (eventType == UserDataUpdateEventType.ACCOUNT_POSITION_UPDATE) {
+            sb.append("accountPositionUpdateEvent", accountUpdateEvent);
+        } else {
+            sb.append("orderTradeUpdateEvent", orderTradeUpdateEvent);
+        }
+        return sb.toString();
+    }
 
-	public enum UserDataUpdateEventType {
-		ACCOUNT_UPDATE("outboundAccountInfo"),
-		ACCOUNT_POSITION_UPDATE("outboundAccountPosition"),
-		ORDER_TRADE_UPDATE("executionReport");
+    public enum UserDataUpdateEventType {
+        ACCOUNT_UPDATE("outboundAccountInfo"),
+        ACCOUNT_POSITION_UPDATE("outboundAccountPosition"),
+        ORDER_TRADE_UPDATE("executionReport");
 
-		private final String eventTypeId;
+        private final String eventTypeId;
 
-		UserDataUpdateEventType(String eventTypeId) {
-			this.eventTypeId = eventTypeId;
-		}
+        UserDataUpdateEventType(String eventTypeId) {
+            this.eventTypeId = eventTypeId;
+        }
 
-		public String getEventTypeId() {
-			return eventTypeId;
-		}
+        public String getEventTypeId() {
+            return eventTypeId;
+        }
 
-		public static UserDataUpdateEventType fromEventTypeId(String eventTypeId) {
-			if (ACCOUNT_UPDATE.eventTypeId.equals(eventTypeId)) {
-				return ACCOUNT_UPDATE;
-			} else if (ORDER_TRADE_UPDATE.eventTypeId.equals(eventTypeId)) {
-				return ORDER_TRADE_UPDATE;
-			} else if (ACCOUNT_POSITION_UPDATE.eventTypeId.equals(eventTypeId)) {
-				return ACCOUNT_POSITION_UPDATE;
-			}
-			throw new IllegalArgumentException("Unrecognized user data update event type id: " + eventTypeId);
-		}
-	}
+        public static UserDataUpdateEventType fromEventTypeId(String eventTypeId) {
+            if (ACCOUNT_UPDATE.eventTypeId.equals(eventTypeId)) {
+                return ACCOUNT_UPDATE;
+            } else if (ORDER_TRADE_UPDATE.eventTypeId.equals(eventTypeId)) {
+                return ORDER_TRADE_UPDATE;
+            } else if (ACCOUNT_POSITION_UPDATE.eventTypeId.equals(eventTypeId)) {
+                return ACCOUNT_POSITION_UPDATE;
+            }
+            throw new IllegalArgumentException("Unrecognized user data update event type id: " + eventTypeId);
+        }
+    }
 }

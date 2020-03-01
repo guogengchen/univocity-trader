@@ -21,157 +21,151 @@ import java.util.concurrent.*;
 
 class IQFeedExchange implements Exchange<IQFeedCandle, Account> {
 
-	private static final Logger logger = LoggerFactory.getLogger(IQFeedExchange.class);
+    private static final Logger logger = LoggerFactory.getLogger(IQFeedExchange.class);
 
-	private IQFeedApiWebSocketClient socketClient;
-	private org.asynchttpclient.ws.WebSocket socketClientCloseable;
-	private final Map<String, SymbolInformation> symbolInformation = new ConcurrentHashMap<>();
+    private IQFeedApiWebSocketClient socketClient;
+    private org.asynchttpclient.ws.WebSocket socketClientCloseable;
+    private final Map<String, SymbolInformation> symbolInformation = new ConcurrentHashMap<>();
 
-	private boolean iqPortal = false;
-	private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup(2);
-	// TODO: ask about maxFrameSize
-	private final AsyncHttpClient asyncHttpClient = HttpUtils.newAsyncHttpClient(eventLoopGroup, 655356);
+    private boolean iqPortal = false;
+    private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup(2);
+    // TODO: ask about maxFrameSize
+    private final AsyncHttpClient asyncHttpClient = HttpUtils.newAsyncHttpClient(eventLoopGroup, 655356);
 
+    @Override
+    public IQFeedClientAccount connectToAccount(Account account) {
+        if (!iqPortal) {
+            try {
+                Runtime.getRuntime().exec(account.iqPortalPath(), null, new File(account.iqPortalPath()));
+                iqPortal = true;
+            } catch (Exception e) {
+                logger.info(e.getMessage());
+            }
+        }
+        return new IQFeedClientAccount();
+    }
 
+    // TODO: implement
+    @Override
+    public Map<String, SymbolInformation> getSymbolInformation() {
+        return new HashMap<>();
+    }
 
+    @Override
+    public IQFeedCandle getLatestTick(String symbol, TimeInterval interval) {
+        // TODO: implement - IF AND ONLY IF the exchange doesn't restrict polling .
+        return null;
+    }
 
-	@Override
-	public IQFeedClientAccount connectToAccount(Account account) {
-		if (!iqPortal) {
-			try {
-				Runtime.getRuntime().exec(account.iqPortalPath(), null, new File(account.iqPortalPath()));
-				iqPortal = true;
-			} catch (Exception e) {
-				logger.info(e.getMessage());
-			}
-		}
-		return new IQFeedClientAccount();
-	}
+    @Override
+    public Map<String, Double> getLatestPrices() {
+        return new HashMap<>();
+    }
 
-	// TODO: implement
-	@Override
-	public Map<String, SymbolInformation> getSymbolInformation() {
-		return new HashMap<>();
-	}
+    @Override
+    public double getLatestPrice(String assetSymbol, String fundSymbol) {
+        return new Double(0);
+    }
 
-	@Override
-	public IQFeedCandle getLatestTick(String symbol, TimeInterval interval) {
-		// TODO: implement - IF AND ONLY IF the exchange doesn't restrict polling .
-		return null;
-	}
+    @Override
+    public IncomingCandles<IQFeedCandle> getLatestTicks(String symbol, TimeInterval interval) {
+        // TODO: implement
+        ChronoUnit timeUnit = null;
+        switch (TimeInterval.getUnitStr(interval.unit)) {
+            case "d":
+                timeUnit = ChronoUnit.DAYS;
+                break;
+            case "h":
+                timeUnit = ChronoUnit.HOURS;
+                break;
+            case "m":
+                timeUnit = ChronoUnit.MINUTES;
+                break;
+            case "s":
+                timeUnit = ChronoUnit.SECONDS;
+                break;
+            case "ms":
+                timeUnit = ChronoUnit.MILLIS;
+                break;
+        }
+        StringBuilder requestIDBuilder = new StringBuilder("IQFeedLatestTicksRequest_" + Instant.now().toString());
+        requestIDBuilder.append("_symbol:" + symbol + "_interval:" + interval.toString());
+        IQFeedHistoricalRequest request = new IQFeedHistoricalRequestBuilder()
+            .setRequestID(requestIDBuilder.toString())
+            .setSymbol(symbol)
+            .setIntervalType(interval)
+            .setBeginDateTime(Instant.now().minus(100L, timeUnit).toEpochMilli())
+            .setEndDateTime(Instant.now().toEpochMilli())
+            .build();
 
-	@Override
-	public Map<String, Double> getLatestPrices() {
-		return new HashMap<>();
-	}
+        List<IQFeedCandle> candles = socketClient().getHistoricalCandlestickBars(request);
+        return IncomingCandles.fromCollection(candles);
+    }
 
-	@Override
-	public double getLatestPrice(String assetSymbol, String fundSymbol) {
-		return new Double(0);
-	}
+    // TODO: implement
+    @Override
+    public IncomingCandles<IQFeedCandle> getHistoricalTicks(String symbol, TimeInterval interval, long startTime,
+        long endTime) {
+        StringBuilder requestIDBuilder = new StringBuilder("IQFeedHistoricalRequest_" + Instant.now().toString());
+        requestIDBuilder.append(
+            "_symbol:" + symbol + "_interval:" + interval.toString() + "_start:" + startTime + "_end:" + endTime);
+        IQFeedHistoricalRequest request = new IQFeedHistoricalRequestBuilder()
+            .setRequestID(requestIDBuilder.toString())
+            .setSymbol(symbol)
+            .setIntervalType(interval)
+            .setBeginDateTime(startTime)
+            .setEndDateTime(endTime)
+            .build();
+        return IncomingCandles.fromCollection(socketClient.getHistoricalCandlestickBars(request));
+    }
+    // TODO: add callback for connection login via IQFeed
 
-	@Override
-	public IncomingCandles<IQFeedCandle> getLatestTicks(String symbol, TimeInterval interval) {
-		// TODO: implement
-		ChronoUnit timeUnit = null;
-		switch (TimeInterval.getUnitStr(interval.unit)) {
-			case "d":
-				timeUnit = ChronoUnit.DAYS;
-				break;
-			case "h":
-				timeUnit = ChronoUnit.HOURS;
-				break;
-			case "m":
-				timeUnit = ChronoUnit.MINUTES;
-				break;
-			case "s":
-				timeUnit = ChronoUnit.SECONDS;
-				break;
-			case "ms":
-				timeUnit = ChronoUnit.MILLIS;
-				break;
-		}
-		StringBuilder requestIDBuilder = new StringBuilder("IQFeedLatestTicksRequest_" + Instant.now().toString());
-		requestIDBuilder.append("_symbol:" + symbol + "_interval:" + interval.toString());
-		IQFeedHistoricalRequest request = new IQFeedHistoricalRequestBuilder()
-				.setRequestID(requestIDBuilder.toString())
-				.setSymbol(symbol)
-				.setIntervalType(interval)
-				.setBeginDateTime(Instant.now().minus(100L, timeUnit).toEpochMilli())
-				.setEndDateTime(Instant.now().toEpochMilli())
-				.build();
+    @Override
+    public Candle generateCandle(IQFeedCandle c) {
+        return new Candle(
+            c.getOpenTime(),
+            c.getCloseTime(),
+            c.getOpen(),
+            c.getHigh(),
+            c.getLow(),
+            c.getClose(),
+            c.getVolume());
+    }
 
-		List<IQFeedCandle> candles = socketClient().getHistoricalCandlestickBars(request);
-		return IncomingCandles.fromCollection(candles);
-	}
+    public PreciseCandle generatePreciseCandle(IQFeedCandle c) {
+        return new PreciseCandle(
+            c.getOpenTime(),
+            c.getCloseTime(),
+            BigDecimal.valueOf(c.getOpen()),
+            BigDecimal.valueOf(c.getHigh()),
+            BigDecimal.valueOf(c.getLow()),
+            BigDecimal.valueOf(c.getClose()),
+            BigDecimal.valueOf(c.getVolume()));
+    }
 
-	//TODO: implement
-	@Override
-	public IncomingCandles<IQFeedCandle> getHistoricalTicks(String symbol, TimeInterval interval, long startTime, long endTime) {
-		StringBuilder requestIDBuilder = new StringBuilder("IQFeedHistoricalRequest_" + Instant.now().toString());
-		requestIDBuilder.append("_symbol:" + symbol + "_interval:" + interval.toString() + "_start:" + startTime + "_end:" + endTime);
-		IQFeedHistoricalRequest request = new IQFeedHistoricalRequestBuilder()
-				.setRequestID(requestIDBuilder.toString())
-				.setSymbol(symbol)
-				.setIntervalType(interval)
-				.setBeginDateTime(startTime)
-				.setEndDateTime(endTime)
-				.build();
-		return IncomingCandles.fromCollection(socketClient.getHistoricalCandlestickBars(request));
-	}
-	// TODO: add callback for connection login via IQFeed
+    // @Override
+    // public List<Candlestick> getHistoricalTicks(String symbol, TimeInterval interval, long startTime, long endTime){
+    // return socketClient().getC
+    // }
 
-	@Override
-	public Candle generateCandle(IQFeedCandle c) {
-		return new Candle(
-				c.getOpenTime(),
-				c.getCloseTime(),
-				c.getOpen(),
-				c.getHigh(),
-				c.getLow(),
-				c.getClose(),
-				c.getVolume()
-		);
-	}
+    // TODO: implement this...
+    @Override
+    public void openLiveStream(String symbols, TimeInterval tickInterval, TickConsumer<IQFeedCandle> consumer) {}
 
-	public PreciseCandle generatePreciseCandle(IQFeedCandle c) {
-		return new PreciseCandle(
-				c.getOpenTime(),
-				c.getCloseTime(),
-				BigDecimal.valueOf(c.getOpen()),
-				BigDecimal.valueOf(c.getHigh()),
-				BigDecimal.valueOf(c.getLow()),
-				BigDecimal.valueOf(c.getClose()),
-				BigDecimal.valueOf(c.getVolume()));
-	}
+    @Override
+    public void closeLiveStream() {
+        if (socketClientCloseable != null) {
+            socketClientCloseable.sendCloseFrame();
+            socketClientCloseable = null;
+        }
+    }
 
-//    @Override
-//    public List<Candlestick> getHistoricalTicks(String symbol, TimeInterval interval, long startTime, long endTime){
-//        return socketClient().getC
-//    }
-
-
-	// TODO: implement this...
-	@Override
-	public void openLiveStream(String symbols, TimeInterval tickInterval, TickConsumer<IQFeedCandle> consumer) {
-	}
-
-	@Override
-	public void closeLiveStream() {
-		if (socketClientCloseable != null) {
-			socketClientCloseable.sendCloseFrame();
-			socketClientCloseable = null;
-		}
-	}
-
-
-	private IQFeedApiWebSocketClient socketClient() {
-		if (socketClient == null) {
-			IQFeedApiClientFactory factory = IQFeedApiClientFactory.newInstance(asyncHttpClient);
-			socketClient = factory.newWebSocketClient();
-		}
-		return socketClient;
-	}
+    private IQFeedApiWebSocketClient socketClient() {
+        if (socketClient == null) {
+            IQFeedApiClientFactory factory = IQFeedApiClientFactory.newInstance(asyncHttpClient);
+            socketClient = factory.newWebSocketClient();
+        }
+        return socketClient;
+    }
 
 }
-

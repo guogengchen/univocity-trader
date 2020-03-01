@@ -9,32 +9,32 @@ import java.util.function.*;
  */
 public abstract class SingleValueCalculationIndicator extends SingleValueIndicator {
 
-	private double current;
-	private double value;
+    private double current;
+    private double value;
 
-	public SingleValueCalculationIndicator(TimeInterval interval) {
-		this(interval, c -> c.close);
-	}
+    public SingleValueCalculationIndicator(TimeInterval interval) {
+        this(interval, c -> c.close);
+    }
 
-	public SingleValueCalculationIndicator(TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
-		super(interval, valueGetter);
-	}
+    public SingleValueCalculationIndicator(TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
+        super(interval, valueGetter);
+    }
 
-	@Override
-	protected final boolean process(Candle candle, double value, boolean updating) {
-		this.value = calculate(candle, value, this.current, updating);
-		if (!updating) {
-			this.current = this.value;
-		}
+    @Override
+    protected final boolean process(Candle candle, double value, boolean updating) {
+        this.value = calculate(candle, value, this.current, updating);
+        if (!updating) {
+            this.current = this.value;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	protected abstract double calculate(Candle candle, double value, double previousValue, boolean updating);
+    protected abstract double calculate(Candle candle, double value, double previousValue, boolean updating);
 
-	@Override
-	public double getValue() {
-		return value;
-	}
+    @Override
+    public double getValue() {
+        return value;
+    }
 
 }

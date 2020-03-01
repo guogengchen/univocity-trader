@@ -11,24 +11,22 @@ import java.util.function.*;
  */
 public class LowestValueIndicator extends ValueSelectionIndicator {
 
-	public LowestValueIndicator(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
-		super(length, interval, valueGetter);
-	}
+    public LowestValueIndicator(int length, TimeInterval interval, ToDoubleFunction<Candle> valueGetter) {
+        super(length, interval, valueGetter);
+    }
 
-	@Override
-	protected double select(double v1, double v2) {
-		return Math.min(v1, v2);
-	}
+    @Override
+    protected double select(double v1, double v2) {
+        return Math.min(v1, v2);
+    }
 
-	@Override
-	protected double initialValue() {
-		return Double.MAX_VALUE;
-	}
+    @Override
+    protected double initialValue() {
+        return Double.MAX_VALUE;
+    }
 
-
-
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }

@@ -8,15 +8,15 @@ import java.util.*;
  */
 public interface Client {
 
-	String getId();
+    String getId();
 
-	void sendBalanceEmail(String title);
+    void sendBalanceEmail(String title);
 
-	void updateBalances();
+    void updateBalances();
 
-	String getEmail();
+    String getEmail();
 
-	ZoneId getTimezone();
+    ZoneId getTimezone();
 
-	Map<String, String[]> getSymbolPairs();
+    Map<String, String[]> getSymbolPairs();
 }

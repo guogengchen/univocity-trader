@@ -5,12 +5,12 @@ import com.univocity.trader.strategy.*;
 
 public class VolumeRateOfChange extends AbstractRateOfChange {
 
-	public VolumeRateOfChange(int length, TimeInterval interval) {
-		super(length, interval, c -> c.volume);
-	}
+    public VolumeRateOfChange(int length, TimeInterval interval) {
+        super(length, interval, c -> c.volume);
+    }
 
-	@Override
-	protected Indicator[] children() {
-		return new Indicator[]{};
-	}
+    @Override
+    protected Indicator[] children() {
+        return new Indicator[] {};
+    }
 }
